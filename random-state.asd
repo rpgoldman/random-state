@@ -15,5 +15,6 @@
   :components ((:file "package")
                (:file "generator")
                (:file "middle-square")
-               (:file "linear-congruence"))
+               (:file "linear-congruence")
+               (:file "tt800"))
   :depends-on ())

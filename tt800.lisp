@@ -1,0 +1,62 @@
+#|
+ This file is a part of random-state
+ (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
+ Author: Nicolas Hafner <shinmera@tymoon.eu>
+|#
+
+(in-package #:org.shirakumo.random-state)
+
+(defclass tt800 (generator)
+  ((magic :initform #(0 #x8ebfd028 #x2b5b2500 #xdb8b0000) :reader magic)
+   (n :initform 25 :reader n)
+   (m :initform 7 :reader m)
+   (index :initform 0 :accessor index)
+   (matrix :initform NIL :accessor matrix)))
+
+(declaim (inline truncate32))
+(declaim (ftype (function (integer) (unsigned-byte 32)) truncate32))
+(defun truncate32 (x)
+  (logand x #xffffffff))
+
+(defmethod reseed ((generator linear-congruence) &optional new-seed)
+  (declare (optimize speed))
+  (let ((array (make-array (n generator) :element-type '(unsigned-byte 32))))
+    (setf (matrix generator) array)
+    (setf (aref array 0) (truncate32 new-seed))
+    ;; Using generator from:
+    ;; Line 25 of Table 1 in "The Art of Computer Programming Vol. 2" (2nd Ed.), pp 102
+    (loop for i from 1 below (length array)
+          do (setf (aref array i)
+                   (truncate32 (* 69069 (aref array (1- i))))))))
+
+(defmethod random-unit ((generator linear-congruence))
+  (let ((i 0)
+        (n (n generator))
+        (m (m generator))
+        (matrix (matrix generator))
+        (magic (magic generator)))
+    (declare (optimize speed)
+             (type (simple-array (unsigned-byte 32)) matrix magic)
+             (type (unsigned-byte 8) n m i))
+    (flet ((matrix (n) (aref matrix n))
+           (magic (n) (aref magic n)))
+      (when (= (the integer (index generator)) n)
+        (loop while (< i (- n m))
+              do (setf (aref matrix i)
+                       (logxor (logxor (matrix (+ i m))
+                                       (ash (matrix i) -1))
+                               (magic (mod (matrix i) 2))))
+                 (incf i))
+        (loop while (< i m)
+              do (setf (aref matrix i)
+                       (logxor (logxor (matrix (+ i (- m n)))
+                                       (ash (matrix i) -1))
+                               (magic (mod (matrix i) 2))))
+                 (incf i))
+        (setf (index generator) 0))
+      (let ((result (matrix (index generator))))
+        (incf (index generator))
+        (setf result (logxor result (logand (ash result 7) (magic 2))))
+        (setf result (logxor result (logand (ash result 15) (magic 3))))
+        (setf result (truncate32 result))
+        (/ (float (logxor result (ash result -16)) 0.0d0) #xffffffff)))))
