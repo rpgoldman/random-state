@@ -13,5 +13,7 @@
   :homepage "https://github.com/Shinmera/random-state"
   :serial T
   :components ((:file "package")
-               (:file "generator"))
+               (:file "generator")
+               (:file "middle-square")
+               (:file "linear-congruence"))
   :depends-on ())
