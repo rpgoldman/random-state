@@ -22,7 +22,7 @@
 (defmethod random-float :around ((generator generator) from to)
   (if (< from to)
       (call-next-method)
-      (generator to from)))
+      (call-next-method generator to from)))
 
 (defmethod random-float ((generator generator) from to)
   (+ from (* (random-unit generator) (- to from))))
@@ -32,7 +32,7 @@
 (defmethod random-int :around ((generator generator) from to)
   (if (< from to)
       (call-next-method)
-      (generator to from)))
+      (call-next-method generator to from)))
 
 (defmethod random-int ((generator generator) from to)
   (round (random-float generator from to)))
