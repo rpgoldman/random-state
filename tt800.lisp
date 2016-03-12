@@ -10,17 +10,17 @@
 ;;   http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/VERSIONS/C-LANG/tt800.c
 
 (defclass tt800 (generator)
-  ((magic :initform #(0 #x8ebfd028) :reader magic)
+  ((magic :initform (barr 32 0 #x8ebfd028) :reader magic)
    (shiftops :initform #((  7 #x2b5b2500)
                          ( 15 #xdb8b0000)
                          (-16 #xffffffff)) :reader shiftops)
    (n :initform 25 :reader n)
    (m :initform 7 :reader m)
    (index :initform 0 :accessor index)
-   (matrix :initform NIL :accessor matrix)))
+   (matrix :initform NIL :reader matrix :writer set-matrix)))
 
 (defmethod reseed ((generator tt800) &optional new-seed)
-  (32bit-seed-array (n generator) new-seed))
+  (set-matrix (32bit-seed-array (n generator) new-seed) generator))
 
 (defmethod random-unit ((generator tt800))
   (let ((i 0)
@@ -53,6 +53,6 @@
         (declare (type (unsigned-byte 32) result))
         (incf (index generator))
         (loop for (shift mask) across shiftops
-              do (setf result (logxor result (logand (ash result (the (unsigned-byte 6) shift))
+              do (setf result (logxor result (logand (ash result (the (signed-byte 6) shift))
                                                      (the (unsigned-byte 32) mask)))))
         (/ (float result 0.0d0) #xffffffff)))))

@@ -17,10 +17,14 @@
    (m :initarg :m :reader m)
    (upper :initarg :upper :reader upper)
    (lower :initarg :lower :reader lower)
-   (matrix :initarg :matrix :reader matrix)
-   (index :initarg :index :reader index)
+   (matrix :initarg :matrix :reader matrix :writer set-matrix)
+   (index :initarg :index :accessor index)
    (magic :initarg :magic :reader magic)
    (shiftops :initarg :shiftops :reader shiftops)))
+
+(defmethod reseed :after ((generator mersenne-twister) &optional new-seed)
+  (declare (ignore new-seed))
+  (setf (index generator) (n generator)))
 
 (defmacro %inner-mersenne-twister (bytes)
   `(let ((i 0)
@@ -59,7 +63,7 @@
          (declare (type (unsigned-byte ,bytes) result))
          (incf (index generator))
          (loop for (shift mask) across shiftops
-               do (setf result (logxor result (logand (ash result (the (unsigned-byte 16) shift))
+               do (setf result (logxor result (logand (ash result (the (signed-byte 16) shift))
                                                       (the (unsigned-byte ,bytes) mask)))))
          (/ (float result 0.0d0) ,(1- (expt 2 bytes)))))))
 
@@ -70,14 +74,14 @@
    :m 397
    :upper #x80000000
    :lower #x7fffffff
-   :magix #(0 #x9908b0df)
+   :magic (barr 32 0 #x9908b0df)
    :shiftops #((-11 #xFFFFFFFF)
                (  7 #x9D2C5680)
                ( 15 #xEFC60000)
                (-18 #xFFFFFFFF))))
 
 (defmethod reseed ((generator mersenne-twister-32) &optional new-seed)
-  (32bit-seed-array (n generator) new-seed))
+  (set-matrix (32bit-seed-array (n generator) new-seed) generator))
 
 (defmethod random-unit ((generator mersenne-twister-32))
   (%inner-mersenne-twister 32))
@@ -89,14 +93,14 @@
    :m 156
    :upper #xFFFFFFFF80000000
    :lower #x000000007FFFFFFF
-   :magic #(0 #xB5026F5AA96619E9)
-   :shiftops #((-29 #x5555555555555555)
-               ( 17 #x71D67FFFEDA60000)
-               ( 37 #xFFF7EEE000000000)
-               (-43 #xFFFFFFFFFFFFFFFF))))
+   :magic (barr 64 0 #xB5026F5AA96619E9)
+   :shiftops #1A((-29 #x5555555555555555)
+                 ( 17 #x71D67FFFEDA60000)
+                 ( 37 #xFFF7EEE000000000)
+                 (-43 #xFFFFFFFFFFFFFFFF))))
 
 (defmethod reseed ((generator mersenne-twister-64) &optional new-seed)
-  (64bit-seed-array (n generator) new-seed))
+  (set-matrix (64bit-seed-array (n generator) new-seed) generator))
 
 (defmethod random-unit ((generator mersenne-twister-64))
   (%inner-mersenne-twister 64))

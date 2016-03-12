@@ -38,3 +38,6 @@
                                              (ash (aref array (1- i)) -62)))
                                   i))))
     array))
+
+(defun barr (bytes &rest contents)
+  (make-array (length contents) :element-type `(unsigned-byte ,bytes) :initial-contents contents))
