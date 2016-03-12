@@ -7,16 +7,13 @@
 (in-package #:org.shirakumo.random-state)
 
 (defclass middle-square (generator)
-  ((maximum :reader maximum :writer %set-max)
-   (minimum :reader minimum :writer %set-min)
+  ((maximum :initarg :maximum :reader maximum :writer set-maximum)
    (state :accessor state)))
 
 (defmethod reseed ((generator middle-square) &optional new-seed)
   (setf (state generator) new-seed)
-  (%set-seed new-seed generator)
-  (%set-min 0 generator)
-  (%set-max (1- (expt 2 (integer-length new-seed))) generator)
-  generator)
+  (set-seed new-seed generator)
+  (set-maximum (1- (expt 2 (integer-length new-seed))) generator))
 
 (defmethod random-unit ((generator middle-square))
   (let* ((digits (integer-length (maximum generator)))
@@ -25,7 +22,5 @@
          (new (ldb (byte digits offset) square)))
     (setf (state generator) new)
     (float
-     (/ new
-        (- (maximum generator)
-           (minimum generator)))
+     (/ new (maximum generator))
      0.0d0)))

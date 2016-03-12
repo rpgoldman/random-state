@@ -7,7 +7,7 @@
 (in-package #:org.shirakumo.random-state)
 
 (defclass generator ()
-  ((seed :initarg :seed :reader seed :writer %set-seed))
+  ((seed :initarg :seed :reader seed :writer set-seed))
   (:default-initargs
    :seed (error "SEED required.")))
 
