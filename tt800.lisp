@@ -15,11 +15,6 @@
    (index :initform 0 :accessor index)
    (matrix :initform NIL :accessor matrix)))
 
-(declaim (inline truncate32))
-(declaim (ftype (function (integer) (unsigned-byte 32)) truncate32))
-(defun truncate32 (x)
-  (logand x #xffffffff))
-
 (defmethod reseed ((generator tt800) &optional new-seed)
   (declare (optimize speed))
   (let ((array (make-array (n generator) :element-type '(unsigned-byte 32))))
