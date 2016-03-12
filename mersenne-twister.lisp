@@ -36,6 +36,7 @@
               (type (unsigned-byte 16) n m i))
      (flet ((magic (i) (aref magic i))
             (matrix (i) (aref matrix i)))
+       (declare (inline magic matrix))
        (when (= (the integer (index generator)) n)
          (loop while (< i (- n m))
                for x = (logior (logand (matrix i) upper)

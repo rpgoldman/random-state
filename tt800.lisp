@@ -34,6 +34,7 @@
              (type (unsigned-byte 8) n m i))
     (flet ((matrix (n) (aref matrix n))
            (magic (n) (aref magic n)))
+      (declare (inline matrix magic))
       (when (= (the integer (index generator)) n)
         (loop while (< i (- n m))
               do (setf (aref matrix i)
