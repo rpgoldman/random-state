@@ -6,16 +6,96 @@
 
 (in-package #:org.shirakumo.random-state)
 
+;; Adapted from 
+;;   http://www.acclab.helsinki.fi/~knordlun/mc/mt19937.c
+;; and
+;;   http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/VERSIONS/C-LANG/mt19937-64.c
+;; respectively.
+
 (defclass mersenne-twister (generator)
-  ((w)
-   (n)
-   (m)
-   (r)
-   (a)
-   (b)
-   (c)
-   (s)
-   (t)
-   (u)
-   (d)
-   (l)))
+  ((n :initarg :n :reader n)
+   (m :initarg :m :reader m)
+   (upper :initarg :upper :reader upper)
+   (lower :initarg :lower :reader lower)
+   (matrix :initarg :matrix :reader matrix)
+   (index :initarg :index :reader index)
+   (magic :initarg :magic :reader magic)
+   (shiftops :initarg :shiftops :reader shiftops)))
+
+(defmacro %inner-mersenne-twister (bytes)
+  `(let ((i 0)
+         (n (n generator))
+         (m (m generator))
+         (upper (upper generator))
+         (lower (lower generator))
+         (matrix (matrix generator))
+         (magic (magic generator))
+         (shiftops (shiftops generator)))
+     (declare (optimize speed)
+              (type (simple-array (unsigned-byte ,bytes)) matrix magic)
+              (type (unsigned-byte 16) n m i))
+     (flet ((magic (i) (aref magic i))
+            (matrix (i) (aref matrix i)))
+       (when (= (the integer (index generator)) n)
+         (loop while (< i (- n m))
+               for x = (logior (logand (matrix i) upper)
+                               (logand (matrix (1+ i)) lower))
+               do (setf (aref matrix i)
+                        (logxor (logxor (matrix (+ i m))
+                                        (ash x -1))
+                                (magic (mod x 2))))
+                  (incf i))
+         (loop while (< i m)
+               for x = (logior (logand (matrix i) upper)
+                               (logand (matrix (1+ i)) lower))
+               do (setf (aref matrix i)
+                        (logxor (logxor (matrix (+ i (- m n)))
+                                        (ash x -1))
+                                (magic (mod x 2))))
+                  (incf i))
+         (setf (index generator) 0))
+       (let ((result (matrix (index generator))))
+         (declare (type (unsigned-byte ,bytes) result))
+         (incf (index generator))
+         (loop for (shift mask) across shiftops
+               do (setf result (logxor result (logand (ash result (the (unsigned-byte 16) shift))
+                                                      (the (unsigned-byte ,bytes) mask)))))
+         (/ (float result 0.0d0) ,(1- (expt 2 bytes)))))))
+
+(defclass mersenne-twister-32 (mersenne-twister)
+  ()
+  (:default-initargs
+   :n 624
+   :m 397
+   :upper #x80000000
+   :lower #x7fffffff
+   :magix #(0 #x9908b0df)
+   :shiftops #((-11 #xFFFFFFFF)
+               (  7 #x9D2C5680)
+               ( 15 #xEFC60000)
+               (-18 #xFFFFFFFF))))
+
+(defmethod reseed ((generator mersenne-twister-32) &optional new-seed)
+  (32bit-seed-array (n generator) new-seed))
+
+(defmethod random-unit ((generator mersenne-twister-32))
+  (%inner-mersenne-twister 32))
+
+(defclass mersenne-twister-64 (mersenne-twister)
+  ()
+  (:default-initargs
+   :n 312
+   :m 156
+   :upper #xFFFFFFFF80000000
+   :lower #x000000007FFFFFFF
+   :magic #(0 #xB5026F5AA96619E9)
+   :shiftops #((-29 #x5555555555555555)
+               ( 17 #x71D67FFFEDA60000)
+               ( 37 #xFFF7EEE000000000)
+               (-43 #xFFFFFFFFFFFFFFFF))))
+
+(defmethod reseed ((generator mersenne-twister-64) &optional new-seed)
+  (64bit-seed-array (n generator) new-seed))
+
+(defmethod random-unit ((generator mersenne-twister-64))
+  (%inner-mersenne-twister 64))

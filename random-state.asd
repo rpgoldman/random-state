@@ -17,5 +17,6 @@
                (:file "generator")
                (:file "middle-square")
                (:file "linear-congruence")
-               (:file "tt800"))
+               (:file "tt800")
+               (:file "mersenne-twister"))
   :depends-on ())
