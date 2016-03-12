@@ -40,7 +40,9 @@
 (defgeneric reseed (generator &optional new-seed))
 
 (defmethod reseed :around ((generator generator) &optional new-seed)
-  (call-next-method generator (or new-seed (get-universal-time)))
+  (let ((seed (or new-seed (get-universal-time))))
+    (set-seed seed generator)
+    (call-next-method generator seed))
   generator)
 
 (defvar *generator*)

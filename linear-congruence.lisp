@@ -23,7 +23,6 @@
       (if (listp new-seed) new-seed (list new-seed))
     (let ((seed (mod seed m)))
       (setf (state generator) seed)
-      (set-seed seed generator)
       (set-multiplier a generator)
       (set-increment c generator)
       (set-modulus m generator))))

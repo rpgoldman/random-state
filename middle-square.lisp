@@ -12,7 +12,6 @@
 
 (defmethod reseed ((generator middle-square) &optional new-seed)
   (setf (state generator) new-seed)
-  (set-seed new-seed generator)
   (set-maximum (1- (expt 2 (integer-length new-seed))) generator))
 
 (defmethod random-unit ((generator middle-square))
