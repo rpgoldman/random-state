@@ -6,25 +6,21 @@
 
 (in-package #:org.shirakumo.random-state)
 
+;; Adapted from
+;;   http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/VERSIONS/C-LANG/tt800.c
+
 (defclass tt800 (generator)
   ((magic :initform #(0 #x8ebfd028) :reader magic)
-   (shiftops :initform #((7 #x2b5b2500)
-                         (15 #xdb8b0000)) :reader shiftops)
+   (shiftops :initform #((  7 #x2b5b2500)
+                         ( 15 #xdb8b0000)
+                         (-16 #xffffffff)) :reader shiftops)
    (n :initform 25 :reader n)
    (m :initform 7 :reader m)
    (index :initform 0 :accessor index)
    (matrix :initform NIL :accessor matrix)))
 
 (defmethod reseed ((generator tt800) &optional new-seed)
-  (declare (optimize speed))
-  (let ((array (make-array (n generator) :element-type '(unsigned-byte 32))))
-    (setf (matrix generator) array)
-    (setf (aref array 0) (truncate32 new-seed))
-    ;; Using generator from:
-    ;; Line 25 of Table 1 in "The Art of Computer Programming Vol. 2" (2nd Ed.), pp 102
-    (loop for i from 1 below (length array)
-          do (setf (aref array i)
-                   (truncate32 (* 69069 (aref array (1- i))))))))
+  (32bit-seed-array (n generator) new-seed))
 
 (defmethod random-unit ((generator tt800))
   (let ((i 0)
@@ -58,5 +54,4 @@
         (loop for (shift mask) across shiftops
               do (setf result (logxor result (logand (ash result (the (unsigned-byte 6) shift))
                                                      (the (unsigned-byte 32) mask)))))
-        (setf result (truncate32 result))
-        (/ (float (logxor result (ash result -16)) 0.0d0) #xffffffff)))))
+        (/ (float result 0.0d0) #xffffffff)))))
