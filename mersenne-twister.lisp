@@ -12,6 +12,8 @@
 ;;   http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/VERSIONS/C-LANG/mt19937-64.c
 ;; respectively.
 
+(declaim (ftype (function (T) fixnum) index))
+
 (defclass mersenne-twister (generator)
   ((n :initarg :n :reader n)
    (m :initarg :m :reader m)
@@ -61,10 +63,12 @@
          (setf (index generator) 0))
        (let ((result (matrix (index generator))))
          (declare (type (unsigned-byte ,bytes) result))
-         (incf (index generator))
+         (setf (index generator) (the fixnum (1+ (index generator))))
          (loop for (shift mask) across shiftops
-               do (setf result (logxor result (logand (ash result (the (signed-byte 16) shift))
-                                                      (the (unsigned-byte ,bytes) mask)))))
+               do (setf result (logxor result
+                                       (logand (ash (the (unsigned-byte ,bytes) result)
+                                                    (the (signed-byte 16) shift))
+                                               (the (unsigned-byte ,bytes) mask)))))
          (/ (float result 0.0d0) ,(1- (expt 2 bytes)))))))
 
 (defclass mersenne-twister-32 (mersenne-twister)
