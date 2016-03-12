@@ -45,8 +45,8 @@
 
 (defvar *generator*)
 
-(defun make-generator (type &optional seed)
-  (let ((generator (make-instance type :seed seed)))
+(defun make-generator (type &optional seed &rest initargs)
+  (let ((generator (apply #'make-instance type :seed seed initargs)))
     (reseed generator seed)))
 
 (defun random (limit &optional (generator *generator*))
