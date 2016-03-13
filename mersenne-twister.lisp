@@ -52,7 +52,7 @@
                                         (ash x -1))
                                 (magic (mod x 2))))
                   (incf i))
-         (loop while (< i m)
+         (loop while (< i (1- n))
                for x = (logior (logand (matrix i) upper)
                                (logand (matrix (1+ i)) lower))
                do (setf (aref matrix i)

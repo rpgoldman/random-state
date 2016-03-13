@@ -43,7 +43,7 @@
                                        (ash (matrix i) -1))
                                (magic (mod (matrix i) 2))))
                  (incf i))
-        (loop while (< i m)
+        (loop while (< i n)
               do (setf (aref matrix i)
                        (logxor (logxor (matrix (+ i (- m n)))
                                        (ash (matrix i) -1))
