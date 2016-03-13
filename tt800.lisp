@@ -20,7 +20,8 @@
    (matrix :initform NIL :reader matrix :writer set-matrix)))
 
 (defmethod reseed ((generator tt800) &optional new-seed)
-  (set-matrix (32bit-seed-array (n generator) new-seed) generator))
+  (set-matrix (32bit-seed-array (n generator) new-seed) generator)
+  (setf (index generator) (n generator)))
 
 (defmethod random-unit ((generator tt800))
   (let ((i 0)
