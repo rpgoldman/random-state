@@ -20,8 +20,13 @@
 (define-widget viewer (QWidget)
   ((buffer :initform NIL :accessor buffer)))
 
-(define-initializer (viewer setup)
-  )
+(define-subwidget (viewer timer) (q+:make-qtimer viewer)
+  (setf (q+:single-shot timer) NIL)
+  (q+:start timer (floor (/ 1000 30))))
+
+(define-slot (viewer tick) ()
+  (declare (connected timer (timeout)))
+  (q+:repaint viewer))
 
 (define-override (viewer paint-event) (ev)
   (when buffer
@@ -36,13 +41,16 @@
     a))
 
 (defmethod generate ((viewer viewer) (generator random-state::generator))
-  (let ((buffer (q+:make-qimage (q+:width viewer) (q+:height viewer) (q+:qimage.format_RGB32)))
-        (old (buffer viewer)))
-    (dotimes (x (q+:width buffer))
-      (dotimes (y (q+:height buffer))
-        (setf (q+:pixel buffer x y) (random-color generator))))
-    (setf (buffer viewer) buffer)
-    (finalize old)))
+  (let ((buffer (buffer viewer)))
+    (unless (and buffer
+                 (= (q+:width buffer) (q+:width viewer))
+                 (= (q+:height buffer) (q+:height viewer)))
+      (setf (buffer viewer) (q+:make-qimage (q+:width viewer) (q+:height viewer) (q+:qimage.format_RGB32)))
+      (finalize buffer)
+      (setf buffer (buffer viewer)))
+    (dotimes (y (q+:height buffer))
+      (dotimes (x (q+:width buffer))
+        (setf (q+:pixel buffer x y) (random-color generator))))))
 
 (define-widget main (QWidget)
   ())
@@ -68,11 +76,13 @@
 
 (define-slot (main regen) ()
   (declare (connected regen (clicked)))
-  (setf (q+:enabled regen) NIL)
-  (generate viewer (random-state::make-generator (cdr (assoc (q+:current-text chooser) *generators* :test #'string-equal))
-                                                 (value seed)))
-  (q+:repaint viewer)
-  (setf (q+:enabled regen) T))
+  (let ((type (cdr (assoc (q+:current-text chooser) *generators* :test #'string-equal)))
+        (seed (value seed)))
+    (bt:make-thread
+     (lambda ()
+       (setf (q+:enabled regen) NIL)
+       (generate viewer (random-state::make-generator type seed))
+       (setf (q+:enabled regen) T)))))
 
 (defun main ()
   (with-main-window (w 'main :main-thread NIL)))
