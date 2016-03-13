@@ -36,4 +36,4 @@
              (type integer m c a x))
     (let ((new (mod (+ c (* x a)) m)))
       (setf (state generator) new)
-      (float (/ new m) 0.0d0))))
+      (/ (float new 0.0d0) m))))
