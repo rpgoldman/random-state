@@ -8,5 +8,32 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (defpackage #:random-state
   (:nicknames #:org.shirakumo.random-state)
   (:use #:cl)
+  ;; generator.lisp
   (:export
-   ))
+   #:generator
+   #:seed
+   #:bytes
+   #:generator-class
+   #:make-generator
+   #:random-byte
+   #:random-bytes
+   #:random-unit
+   #:random-float
+   #:random-int
+   #:reseed)
+  ;; linear-congruence.lisp
+  (:export
+   #:linear-congruence)
+  ;; mersenne-twister.lisp
+  (:export
+   #:mersenne-twister-32
+   #:mersenne-twister-64)
+  ;; middle-square.lisp
+  (:export
+   #:middle-square)
+  ;; rc4.lisp
+  (:export
+   #:rc4)
+  ;; tt800.lisp
+  (:export
+   #:tt800))

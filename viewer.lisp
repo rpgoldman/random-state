@@ -6,7 +6,9 @@
 
 (defpackage #:random-state-viewer
   (:nicknames #:org.shirakumo.random-state.viewer)
-  (:use #:cl+qt))
+  (:use #:cl+qt)
+  (:export
+   #:main))
 
 (in-package #:org.shirakumo.random-state.viewer)
 (in-readtable :qtools)
