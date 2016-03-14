@@ -41,3 +41,6 @@
 
 (defun barr (bytes &rest contents)
   (make-array (length contents) :element-type `(unsigned-byte ,bytes) :initial-contents contents))
+
+(defmacro incfmod (place mod &optional (delta 1))
+  `(setf ,place (mod (+ ,place ,delta) ,mod)))

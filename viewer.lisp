@@ -15,6 +15,7 @@
                        ("Mersenne Twister 32" . random-state::mersenne-twister-32)
                        ("Mersenne Twister 64" . random-state::mersenne-twister-64)
                        ("Middle Square" . random-state::middle-square)
+                       ("RC4" . random-state::rc4)
                        ("TT800" . random-state::tt800)))
 
 (define-widget viewer (QWidget)
