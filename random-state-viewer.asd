@@ -13,6 +13,7 @@
   :homepage "https://github.com/Shinmera/random-state"
   :serial T
   :components ((:file "viewer"))
-  :depends-on (:qtools
+  :depends-on (:random-state
+               :qtools
                :qtcore
                :qtgui))
