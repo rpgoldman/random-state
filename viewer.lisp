@@ -63,8 +63,8 @@
   (q+:add-items chooser (mapcar #'car *generators*)))
 
 (define-subwidget (main seed) (q+:make-qspinbox main)
-  (setf (q+:maximum seed) (1- (expt 2 8)))
-  (setf (q+:value seed) (mod (get-universal-time) (1- (expt 2 8)))))
+  (setf (q+:maximum seed) #xFFFFFFF)
+  (setf (q+:value seed) (mod (get-universal-time) #xFFFFFFF)))
 
 (define-subwidget (main layout) (q+:make-qvboxlayout main)
   (q+:add-widget layout viewer)
