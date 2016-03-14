@@ -19,5 +19,6 @@
                (:file "linear-congruence")
                (:file "tt800")
                (:file "mersenne-twister")
-               (:file "rc4"))
-  :depends-on ())
+               (:file "rc4")
+               (:file "documentation"))
+  :depends-on (:documentation-utils))
