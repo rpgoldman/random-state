@@ -17,13 +17,14 @@
    (n :initform 25 :reader n)
    (m :initform 7 :reader m)
    (index :initform 0 :accessor index)
-   (matrix :initform NIL :reader matrix :writer set-matrix)))
+   (matrix :initform NIL :reader matrix :writer set-matrix)
+   (bytes :initform 32)))
 
 (defmethod reseed ((generator tt800) &optional new-seed)
   (set-matrix (32bit-seed-array (n generator) new-seed) generator)
   (setf (index generator) (n generator)))
 
-(defmethod random-unit ((generator tt800))
+(defmethod random-byte ((generator tt800))
   (let ((i 0)
         (n (n generator))
         (m (m generator))
@@ -31,7 +32,9 @@
         (magic (magic generator))
         (shiftops (shiftops generator)))
     (declare (optimize speed)
+             (ftype (function (tt800) (unsigned-byte 8)) index)
              (type (simple-array (unsigned-byte 32)) matrix magic)
+             (type (simple-array list 1) shiftops)
              (type (unsigned-byte 8) n m i))
     (flet ((matrix (n) (aref matrix n))
            (magic (n) (aref magic n)))
@@ -56,4 +59,4 @@
         (loop for (shift mask) across shiftops
               do (setf result (logxor result (logand (ash result (the (signed-byte 6) shift))
                                                      (the (unsigned-byte 32) mask)))))
-        (/ (float result 0.0d0) #xffffffff)))))
+        result))))

@@ -6,6 +6,11 @@
 
 (in-package #:org.shirakumo.random-state)
 
+(declaim (inline truncate-bits))
+(declaim (ftype (function ((integer 0) (integer 0)) (integer 0))))
+(defun truncate-bits (x bits)
+  (logand x (1- (ash 1 bits))))
+
 (declaim (inline truncate32))
 (declaim (ftype (function (integer) (unsigned-byte 32)) truncate32))
 (defun truncate32 (x)

@@ -6,8 +6,10 @@
 
 (in-package #:org.shirakumo.random-state)
 
+(declaim (ftype (function (generator) (values (unsigned-byte 8))) bytes))
 (defclass generator ()
-  ((seed :initarg :seed :reader seed :writer set-seed))
+  ((seed :initarg :seed :reader seed :writer set-seed)
+   (bytes :initform (error "Missing BYTES initform from generator definition.") :reader bytes))
   (:default-initargs
    :seed (error "SEED required.")))
 
@@ -15,41 +17,96 @@
   (print-unreadable-object (generator stream :type T)
     (format stream "~s" (seed generator))))
 
-(defgeneric random-unit (generator))
+(defun generator-class (name)
+  (let ((symbol (find-symbol (string name) '#:org.shirakumo.random-state)))
+    (or (and symbol (find-class symbol NIL))
+        (error "No such generator ~s." name))))
 
-(defgeneric random-float (generator from to))
+(defun make-generator (generator &optional seed &rest initargs)
+  (let ((generator (apply #'make-instance (generator-class generator) :seed seed initargs)))
+    (reseed generator seed)))
 
-(defmethod random-float :around ((generator generator) from to)
+(defmacro define-generator-generic (name (generator &rest args) &rest options)
+  `(progn
+     (defgeneric ,name (,generator ,@args)
+       ,@options)
+
+     (defmethod ,name (,generator ,@args)
+       (,name (make-generator ,generator)
+              ,@(remove-if (lambda (a) (find a lambda-list-keywords)) args)))))
+
+(declaim (ftype (function (generator) (values (integer 0))) random-byte))
+(define-generator-generic random-byte (generator))
+
+(declaim (ftype (function (generator integer) (values (integer 0))) random-bytes))
+(define-generator-generic random-bytes (generator bytes))
+
+(defmethod random-bytes ((generator generator) (bytes integer))
+  (declare (optimize speed))
+  (let ((chunk (bytes generator)))
+    (cond ((= bytes chunk)
+           (random-byte generator))
+          ((< bytes chunk)
+           (truncate-bits (random-byte generator) bytes))
+          (T
+           (let ((random 0))
+             ;; Fill upper bits
+             (loop for i downfrom (- bytes chunk) above 0 by chunk
+                   for byte = (random-byte generator)
+                   do (setf (ldb (byte chunk i) random) byte))
+             ;; Fill lowermost bits.
+             ;; This will cause spilling on misaligned boundaries, but we don't care.
+             (setf (ldb (byte chunk 0) random) (random-byte generator))
+             random)))))
+
+(declaim (ftype (function (generator) (values double-float)) random-byte))
+(define-generator-generic random-unit (generator))
+
+(defmethod random-unit ((generator generator))
+  (declare (optimize speed))
+  (let* ((bits #.(integer-length most-positive-fixnum))
+         (random (random-bytes generator bits)))
+    (/ (float (the (integer 0) random) 0.0d0) most-positive-fixnum)))
+
+(declaim (ftype (function (generator) (values double-float)) random-float))
+(define-generator-generic random-float (generator from to))
+
+(defmethod random-float :around ((generator generator) (from real) (to real))
+  (declare (optimize speed))
   (if (< from to)
       (call-next-method)
       (call-next-method generator to from)))
 
-(defmethod random-float ((generator generator) from to)
-  (+ from (* (random-unit generator) (- to from))))
+(defmethod random-float ((generator generator) (from real) (to real))
+  (declare (optimize speed))
+  (+ to (* (- to from) (random-unit generator))))
 
-(defgeneric random-int (generator from to))
+(declaim (ftype (function (generator) (values integer)) random-int))
+(define-generator-generic random-int (generator from to))
 
-(defmethod random-int :around ((generator generator) from to)
+(defmethod random-int :around ((generator generator) (from integer) (to integer))
+  (declare (optimize speed))
   (if (< from to)
       (call-next-method)
       (call-next-method generator to from)))
 
-(defmethod random-int ((generator generator) from to)
-  (round (random-float generator from to)))
+(defmethod random-int ((generator generator) (from integer) (to integer))
+  (declare (optimize speed))
+  (cond ((and (typep from 'fixnum) (typep to 'fixnum))
+         (let* ((range (- to from))
+                (bits (integer-length range))
+                (random (random-bytes generator bits)))
+           (declare (type (integer 0) random range))
+           (+ from
+              (if (= 0 (logand range (1+ range)))
+                  random
+                  (round (* range (/ random (ash 1 bits))))))))))
 
-(defgeneric reseed (generator &optional new-seed))
+(declaim (ftype (function (generator &optional T) (values generator)) reseed))
+(define-generator-generic reseed (generator &optional new-seed))
 
 (defmethod reseed :around ((generator generator) &optional new-seed)
   (let ((seed (or new-seed (get-universal-time))))
     (set-seed seed generator)
     (call-next-method generator seed))
   generator)
-
-(defvar *generator*)
-
-(defun make-generator (type &optional seed &rest initargs)
-  (let ((generator (apply #'make-instance type :seed seed initargs)))
-    (reseed generator seed)))
-
-(defun random (limit &optional (generator *generator*))
-  (random-int generator 0 limit))

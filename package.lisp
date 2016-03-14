@@ -8,6 +8,5 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (defpackage #:random-state
   (:nicknames #:org.shirakumo.random-state)
   (:use #:cl)
-  (:shadow #:random)
   (:export
    ))

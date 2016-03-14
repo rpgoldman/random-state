@@ -38,6 +38,7 @@
          (magic (magic generator))
          (shiftops (shiftops generator)))
      (declare (optimize speed)
+              (ftype (function (mersenne-twister) (unsigned-byte 16)) index)
               (type (simple-array (unsigned-byte ,bytes)) matrix magic)
               (type (unsigned-byte 16) n m i))
      (flet ((magic (i) (aref magic i))
@@ -69,10 +70,10 @@
                                        (logand (ash (the (unsigned-byte ,bytes) result)
                                                     (the (signed-byte 16) shift))
                                                (the (unsigned-byte ,bytes) mask)))))
-         (/ (float result 0.0d0) ,(1- (expt 2 bytes)))))))
+         result))))
 
 (defclass mersenne-twister-32 (mersenne-twister)
-  ()
+  ((bytes :initform 32))
   (:default-initargs
    :n 624
    :m 397
@@ -87,11 +88,11 @@
 (defmethod reseed ((generator mersenne-twister-32) &optional new-seed)
   (set-matrix (32bit-seed-array (n generator) new-seed) generator))
 
-(defmethod random-unit ((generator mersenne-twister-32))
+(defmethod random-byte ((generator mersenne-twister-32))
   (%inner-mersenne-twister 32))
 
 (defclass mersenne-twister-64 (mersenne-twister)
-  ()
+  ((bytes :initform 64))
   (:default-initargs
    :n 312
    :m 156
@@ -106,5 +107,5 @@
 (defmethod reseed ((generator mersenne-twister-64) &optional new-seed)
   (set-matrix (64bit-seed-array (n generator) new-seed) generator))
 
-(defmethod random-unit ((generator mersenne-twister-64))
+(defmethod random-byte ((generator mersenne-twister-64))
   (%inner-mersenne-twister 64))
