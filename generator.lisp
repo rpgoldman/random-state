@@ -68,7 +68,7 @@
          (random (random-bytes generator bits)))
     (/ (float (the (integer 0) random) 0.0d0) most-positive-fixnum)))
 
-(declaim (ftype (function (generator) (values double-float)) random-float))
+(declaim (ftype (function (generator real real) (values double-float)) random-float))
 (define-generator-generic random-float (generator from to))
 
 (defmethod random-float :around ((generator generator) (from real) (to real))
@@ -81,7 +81,7 @@
   (declare (optimize speed))
   (+ to (* (- to from) (random-unit generator))))
 
-(declaim (ftype (function (generator) (values integer)) random-int))
+(declaim (ftype (function (generator integer integer) (values integer)) random-int))
 (define-generator-generic random-int (generator from to))
 
 (defmethod random-int :around ((generator generator) (from integer) (to integer))
