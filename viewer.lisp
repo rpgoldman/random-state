@@ -44,7 +44,8 @@
     a))
 
 (defmethod generate ((viewer viewer) (generator random-state::generator))
-  (let ((buffer (buffer viewer)))
+  (let ((buffer (buffer viewer))
+        (start (get-internal-real-time)))
     (unless (and buffer
                  (= (q+:width buffer) (q+:width viewer))
                  (= (q+:height buffer) (q+:height viewer)))
@@ -53,7 +54,9 @@
       (setf buffer (buffer viewer)))
     (dotimes (y (q+:height buffer))
       (dotimes (x (q+:width buffer))
-        (setf (q+:pixel buffer x y) (random-color generator))))))
+        (setf (q+:pixel buffer x y) (random-color generator))))
+    (format T "~&Generation took ~fs~%" (/ (- (get-internal-real-time) start)
+                                           internal-time-units-per-second))))
 
 (define-widget main (QWidget)
   ())
@@ -85,7 +88,8 @@
      (lambda ()
        (setf (q+:enabled regen) NIL)
        (generate viewer (random-state::make-generator type seed))
-       (setf (q+:enabled regen) T)))))
+       (setf (q+:enabled regen) T))
+     :initial-bindings `((*standard-output* . ,*standard-output*)))))
 
 (defun main ()
   (with-main-window (w 'main :main-thread NIL)))
