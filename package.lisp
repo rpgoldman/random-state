@@ -31,6 +31,9 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   ;; middle-square.lisp
   (:export
    #:middle-square)
+  ;; pcg.lisp
+  (:export
+   #:pcg)
   ;; rc4.lisp
   (:export
    #:rc4)
