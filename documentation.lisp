@@ -86,7 +86,7 @@ See GENERATOR")
     "Reinitialises the generator with the new seed. 
 
 The seed should be an integer. If not given, the current value returned by
-GET-UNIVERSAL-TIME is used."))
+HOPEFULLY-SUFFICIENTLY-RANDOM-SEED is used."))
 
 ;; linear-congruence.lisp
 (docs:define-docs
@@ -116,6 +116,13 @@ See http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/VERSIONS/C-LANG/mt19937-64.c
 
 See https://en.wikipedia.org/wiki/Middle-square_method"))
 
+;; pcg.lisp
+(docs:define-docs
+  (type pcg
+    "An adaptation of the PCG rng.
+
+See http://www.pcg-random.org"))
+
 ;; rc4.lisp
 (docs:define-docs
   (type rc4
@@ -129,3 +136,12 @@ See https://en.wikipedia.org/wiki/RC4"))
     "The predecessor to the Mersenne Twister algorithm.
 
 See http://random.mat.sbg.ac.at/publics/ftp/pub/data/tt800.c"))
+
+;; toolkit.lisp
+(docs:define-docs
+  (function hopefully-sufficiently-random-seed
+    "Attempts to find a sufficiently random seed.
+
+On Unix, this reads 64 bits from /dev/urandom
+On Windows+SBCL, this reads 64 bits from SB-WIN32:CRYPT-GEN-RANDOM
+Otherwise it uses an XOR of GET-INTERNAL-REAL-TIME and GET-UNIVERSAL-TIME."))

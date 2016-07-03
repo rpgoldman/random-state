@@ -40,4 +40,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
    #:rc4)
   ;; tt800.lisp
   (:export
-   #:tt800))
+   #:tt800)
+  ;; toolkit.lisp
+  (:export
+   #:hopefully-sufficiently-random-seed))

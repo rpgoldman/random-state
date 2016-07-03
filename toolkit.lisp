@@ -21,6 +21,25 @@
 (defun truncate64 (x)
   (logand x #xFFFFFFFFFFFFFFFF))
 
+(defun byte-array-to-int (array)
+  (loop with int = 0
+        for i from 0 below (length array)
+        do (setf (ldb (byte 8 (* i 8)) int) (aref array i))
+        finally (return int)))
+
+(defun hopefully-sufficiently-random-seed ()
+  #+unix
+  (let ((seq (make-array 8 :element-type '(unsigned-byte 8))))
+    (with-open-file (stream #P"/dev/urandom" :element-type '(unsigned-byte 8))
+      (read-sequence seq stream))
+    (byte-array-to-int seq))
+  #+(and win32 sb-dynamic-core)
+  (byte-array-to-int (sb-win32:crypt-gen-random 8))
+  #-(or unix (and win32 sb-dynamic-core))
+  (logxor #+sbcl (sb-ext:get-bytes-consed)
+          (get-internal-real-time)
+          (get-universal-time)))
+
 (defun 32bit-seed-array (size seed)
   (declare (optimize speed))
   (let ((array (make-array size :element-type '(unsigned-byte 32))))
