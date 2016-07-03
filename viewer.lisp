@@ -17,6 +17,7 @@
                        ("Mersenne Twister 32" . random-state::mersenne-twister-32)
                        ("Mersenne Twister 64" . random-state::mersenne-twister-64)
                        ("Middle Square" . random-state::middle-square)
+                       ("PCG" . random-state::pcg)
                        ("RC4" . random-state::rc4)
                        ("TT800" . random-state::tt800)))
 
@@ -92,10 +93,11 @@
        (let ((start (get-internal-real-time)))
          (setf (q+:text status) "Generating...")
          (setf (q+:enabled regen) NIL)
-         (generate viewer (random-state::make-generator type seed))
-         (setf (q+:enabled regen) T)
-         (setf (q+:text status) (format NIL "Generation took ~fs." (/ (- (get-internal-real-time) start)
-                                                                      internal-time-units-per-second)))))
+         (unwind-protect
+              (generate viewer (random-state::make-generator type seed))
+           (setf (q+:enabled regen) T)
+           (setf (q+:text status) (format NIL "Generation took ~fs." (/ (- (get-internal-real-time) start)
+                                                                        internal-time-units-per-second))))))
      :initial-bindings `((*standard-output* . ,*standard-output*)))))
 
 (defun main ()
