@@ -10,3 +10,5 @@ For both curiosity and convenience, this library offers multiple algorithms to g
     => (5 6 6 3 2 8 6 9 6 1)
 
 The library does make some efforts to be reasonably efficient while preserving usability, but each of the implementations could be optimised further. For performance critical sections, you might want to take matters into your own hands and only rely on `random-byte` for the most direct access to the generator. If that still is not sufficiently fast, creating a tailored implementation of an algorithm based on the source code of this library should not be difficult.
+
+Several methods to compute random numbers in certain ranges are provided in advance: `random-byte`, `random-bytes`, `random-unit`, `random-float`, and `random-int`. Each of those can also be used with just the name of the generator you'd like to use as the first argument, in which case a global instance will be used.

@@ -10,6 +10,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (:use #:cl)
   ;; generator.lisp
   (:export
+   #:global-generator
    #:generator
    #:seed
    #:bytes

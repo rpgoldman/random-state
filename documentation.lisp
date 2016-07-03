@@ -7,6 +7,11 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (in-package #:org.shirakumo.random-state)
 
 (docs:define-docs
+  (function global-generator
+    "Returns a global instance of a generator.
+
+See MAKE-GENERATOR")
+  
   (type generator
     "General class for any random number generator.
 

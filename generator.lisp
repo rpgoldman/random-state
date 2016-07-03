@@ -6,6 +6,14 @@
 
 (in-package #:org.shirakumo.random-state)
 
+(defvar *generators* (make-hash-table :test 'eql))
+
+(defun global-generator (name)
+  (let ((class (generator-class name)))
+    (or (gethash (class-name class) *generators*)
+        (setf (gethash (class-name class) *generators*)
+              (make-generator class)))))
+
 (declaim (ftype (function (generator) (values (unsigned-byte 8))) bytes))
 (defclass generator ()
   ((seed :initarg :seed :reader seed :writer set-seed)
@@ -37,7 +45,7 @@
        ,@options)
 
      (defmethod ,name (,generator ,@args)
-       (,name (make-generator ,generator)
+       (,name (global-generator ,generator)
               ,@(remove-if (lambda (a) (find a lambda-list-keywords)) args)))))
 
 (declaim (ftype (function (generator) (values (integer 0))) random-byte))
