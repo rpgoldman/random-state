@@ -18,9 +18,14 @@
     (format stream "~s" (seed generator))))
 
 (defun generator-class (name)
-  (let ((symbol (find-symbol (string name) '#:org.shirakumo.random-state)))
-    (or (and symbol (find-class symbol NIL))
-        (error "No such generator ~s." name))))
+  (let ((class (if (typep name 'class)
+                   name
+                   (let ((symbol (find-symbol (string name) '#:org.shirakumo.random-state)))
+                     (or (and symbol (find-class symbol NIL))
+                         (error "No such generator ~s." name))))))
+    (if (subtypep (class-name class) 'generator)
+        class
+        (error "~a is not a subclass of generator." class))))
 
 (defun make-generator (generator &optional seed &rest initargs)
   (let ((generator (apply #'make-instance (generator-class generator) :seed seed initargs)))

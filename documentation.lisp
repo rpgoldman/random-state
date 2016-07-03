@@ -27,7 +27,7 @@ See RESEED")
     "Returns the number of bytes (bits) that a RANDOM-BYTE call of this generator produces.")
   
   (function generator-class
-    "Attempts to find the named generator class. Accepts strings and symbols.
+    "Attempts to find the named generator class. Accepts strings, symbols, and classes.
 
 If no generator can be found, an error is signalled.")
   
