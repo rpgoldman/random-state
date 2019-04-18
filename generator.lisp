@@ -105,15 +105,15 @@
 
 (defmethod random-int ((generator generator) (from integer) (to integer))
   (declare (optimize speed))
-  (cond ((and (typep from 'fixnum) (typep to 'fixnum))
-         (let* ((range (- to from))
-                (bits (integer-length range))
-                (random (random-bytes generator bits)))
-           (declare (type (integer 0) random range))
-           (+ from
-              (if (= 0 (logand range (1+ range)))
-                  random
-                  (round (* range (/ random (ash 1 bits))))))))))
+  (let* ((range (- to from))
+         (bits (integer-length range))
+         (random (random-bytes generator bits)))
+    (declare (type (integer 0) random range)
+             (type fixnum bits))
+    (+ from
+       (if (= 0 (logand range (1+ range)))
+           random
+           (round (* range (/ random (ash 1 bits))))))))
 
 (declaim (ftype (function (generator &optional T) (values generator)) reseed))
 (define-generator-generic reseed (generator &optional new-seed))
