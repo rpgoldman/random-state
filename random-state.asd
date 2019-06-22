@@ -7,7 +7,7 @@
 (asdf:defsystem random-state
   :version "0.1.0"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
-  :license "Artistic"
+  :license "zlib"
   :description "Portable random number generation."
   :homepage "https://Shinmera.github.io/random-state/"
   :bug-tracker "https://github.com/Shinmera/random-state/issues"

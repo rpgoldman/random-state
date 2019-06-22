@@ -7,7 +7,7 @@
 (asdf:defsystem random-state-viewer
   :version "1.0.0"
   :author "Nicolas Hafner <shinmera@tymoon.eu>"
-  :license "Artistic"
+  :license "zlib"
   :description "Visualiser for the random number generators"
   :homepage "https://Shinmera.github.io/random-state/"
   :bug-tracker "https://github.com/Shinmera/random-state/issues"
