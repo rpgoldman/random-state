@@ -144,7 +144,7 @@
        
        (defmethod copy ((generator ,name))
          (,copy generator))
-       (defmethod %make-generator ((type (eql ',name)) &rest initargs)
+       (defmethod %make-generator ((type (eql ',name)) &rest initargs &key &allow-other-keys)
          (apply #',constructor initargs))
        (defmethod bits-per-byte ((generator ,name))
          ,bits-per-byte))))
