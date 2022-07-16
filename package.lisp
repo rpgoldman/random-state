@@ -8,6 +8,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
 (defpackage #:random-state
   (:nicknames #:org.shirakumo.random-state)
   (:use #:cl)
+  (:shadow #:random)
   ;; generator.lisp
   (:export
    #:global-generator
@@ -27,6 +28,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
    #:rewind)
   ;; protocol.lisp
   (:export
+   #:random
    #:random-1d
    #:random-2d
    #:random-3d

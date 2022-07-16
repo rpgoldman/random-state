@@ -26,7 +26,7 @@
   (error "Can't reseed RANDOM-STATE objects on ~a" (lisp-implementation-type)))
 
 (defmethod next-byte ((generator random-state))
-  (random most-positive-fixnum generator))
+  (cl:random most-positive-fixnum generator))
 
 (defmethod bits-per-byte ((generator random-state))
   (integer-length most-positive-fixnum))

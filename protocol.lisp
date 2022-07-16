@@ -6,6 +6,20 @@
 
 (in-package #:org.shirakumo.random-state)
 
+(declaim (inline random))
+(defun random (max &optional (generator *random-state*))
+  (etypecase max
+    ((integer 0)
+     (random-int generator 0 (1- max)))
+    ((short-float 0s0)
+     (random-float generator 0s0 (- max short-float-epsilon)))
+    ((single-float 0f0)
+     (random-float generator 0f0 (- max single-float-epsilon)))
+    ((double-float 0d0)
+     (random-float generator 0d0 (- max double-float-epsilon)))
+    ((long-float 0l0)
+     (random-float generator 0l0 (- max long-float-epsilon)))))
+
 (defun random-1d (generator index &optional (seed 0))
   (hash generator index seed))
 

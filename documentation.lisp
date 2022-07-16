@@ -126,6 +126,19 @@ See HASH-GENERATOR"))
 
 ;; protocol.lisp
 (docs:define-docs
+  (functiond random
+    "Returns a number in [0, MAX[.
+
+This is a drop-in replacement for CL:RANDOM.
+The returned type is the same as MAX, where MAX must be an INTEGER or
+a FLOAT greater than zero. The returned number must be smaller than MAX.
+
+GENERATOR may be anything accepted by ENSURE-GENERATOR.
+
+See RANDOM-INT
+See RANDOM-FLOAT
+See ENSURE-GENERATOR")
+  
   (function random-1d
     "Returns a byte for the given index and seed.
 
