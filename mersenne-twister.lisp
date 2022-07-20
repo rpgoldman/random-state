@@ -79,7 +79,7 @@
     ((upper #xFFFFFFFF80000000 :type (unsigned-byte 64))
      (lower #x000000007FFFFFFF :type (unsigned-byte 64))
      (magic (barr 64 0 #xB5026F5AA96619E9) :type (simple-array (unsigned-byte 64) (2)))
-     (matrix (make-array 312 :element-type `(unsigned-byte 32)) :type (simple-array (unsigned-byte 64) (312))))
+     (matrix (make-array 312 :element-type `(unsigned-byte 64)) :type (simple-array (unsigned-byte 64) (312))))
   (:reseed
    (setf matrix (64bit-seed-array 312 seed))
    (setf index 312))
