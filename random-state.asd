@@ -23,6 +23,7 @@
                (:file "pcg")
                (:file "rc4")
                (:file "tt800")
+               (:file "kiss")
                (:file "squirrel")
                (:file "implementation")
                (:file "documentation"))
