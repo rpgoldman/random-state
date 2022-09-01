@@ -79,7 +79,7 @@
 (define-generator-fun bits-per-byte (generator))
 (define-generator-fun copy (generator))
 
-(defun make-generator (type &optional seed &rest initargs)
+(defun make-generator (type &optional (seed T) &rest initargs)
   (let ((generator (apply #'%make-generator type initargs)))
     (when seed (reseed generator seed))
     generator))
