@@ -26,5 +26,8 @@
                (:file "kiss")
                (:file "squirrel")
                (:file "implementation")
-               (:file "documentation"))
-  :depends-on (:documentation-utils))
+               ))
+
+(asdf:defsystem "random-state/documentation"
+    :depends-on ("random-state" :documentation-utils)
+  :components ((:file "documentation")))
