@@ -23,17 +23,19 @@
         finally (return int)))
 
 (defun hopefully-sufficiently-random-seed ()
-  #+unix
-  (let ((seq (make-array 8 :element-type '(unsigned-byte 8))))
-    (with-open-file (stream #P"/dev/urandom" :element-type '(unsigned-byte 8))
-      (read-sequence seq stream))
-    (byte-array-to-int seq))
-  #+(and win32 sb-dynamic-core)
-  (byte-array-to-int (sb-win32:crypt-gen-random 8))
-  #-(or unix (and win32 sb-dynamic-core))
-  (logxor #+sbcl (sb-ext:get-bytes-consed)
-          (get-internal-real-time)
-          (get-universal-time)))
+  (or
+   #+unix
+   (ignore-errors
+    (let ((seq (make-array 8 :element-type '(unsigned-byte 8))))
+      (with-open-file (stream #P"/dev/urandom" :element-type '(unsigned-byte 8))
+        (read-sequence seq stream))
+      (byte-array-to-int seq)))
+   #+(and win32 sb-dynamic-core)
+   (ignore-errors
+    (byte-array-to-int (sb-win32:crypt-gen-random 8)))
+   (logxor #+sbcl (sb-ext:get-bytes-consed)
+           (get-internal-real-time)
+           (get-universal-time))))
 
 (defun 32bit-seed-array (size seed)
   (declare (optimize speed))
