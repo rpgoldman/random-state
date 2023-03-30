@@ -44,10 +44,17 @@ jobs:
       - name: what the heck is going on
         run: |
           ls /
+          echo "User is:" 
           echo $USER
+          echo "ls /github:"
           ls /github || true
+          echo "ls /root:"
           ls /root || true
+          echo "ls /home"
           ls /home || true
+          echo "home directory is:"
+          cd ~ ; pwd
+          ls
 
       - name: Link the project
         run: ln -s $GITHUB_WORKSPACE/random-state /root/quicklisp/local-projects
