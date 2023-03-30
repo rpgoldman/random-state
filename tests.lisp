@@ -15,7 +15,7 @@
 
 (defmacro repeatable-generator (type)
   (let ((test-name (intern (format nil "~A-RANDOM-REPEATABLE" type) :random-state-tests)))
-   (test ,test-name
+   `(test ,test-name
       (let ((new-generator (random-state:make-generator ,type (hopefully-sufficiently-random-seed)))
             sequence1 sequence2)
         (let ((*random-generator* (copy new-generator)))
@@ -37,9 +37,35 @@
 ;;; don't love this code, but haven't figured out an alternative.
 (eval-when (:load-toplevel :execute)
   (eval (cons 'progn
-              (loop for gen in (list-generator-types)
-                    collect `(repeatable-generator ,gen)))))
+              (loop for gen in (remove 'random-state (list-generator-types))
+                    collect `(repeatable-generator ,(uiop:intern* gen :keyword))))))
 
+(defmacro repeatable-generator-no-specials (type)
+  (let ((test-name (intern (format nil "~A-RANDOM-REPEATABLE-NO-SPECIALS" type) :random-state-tests)))
+   `(test ,test-name
+      (let ((new-generator (random-state:make-generator ,type (hopefully-sufficiently-random-seed)))
+            sequence1 sequence2)
+        (let ((generator (copy new-generator)))
+          (setf sequence1 (let (sequence)
+                            (dotimes (x 10)
+                              (push
+                               (random 10 generator)
+                               sequence))
+                            sequence)))
+        (let ((generator (copy new-generator)))
+          (setf sequence2 (let (sequence)
+                            (dotimes (x 10)
+                              (push
+                               (random 10 generator)
+                               sequence))
+                            sequence)))
+        (fiveam::is (equalp sequence1 sequence2))))))
+
+;;; don't love this code, but haven't figured out an alternative.
+(eval-when (:load-toplevel :execute)
+  (eval (cons 'progn
+              (loop for gen in (remove 'random-state (list-generator-types))
+                    collect `(repeatable-generator-no-specials ,(uiop:intern* gen :keyword))))))
 
 
 
