@@ -13,6 +13,7 @@
   :bug-tracker "https://github.com/Shinmera/random-state/issues"
   :source-control (:git "https://github.com/Shinmera/random-state.git")
   :serial T
+  :in-order-to ((test-op (test-op "random-state/tests")))
   :components ((:file "package")
                (:file "toolkit")
                (:file "generator")
@@ -34,5 +35,4 @@
 
 (asdf:defsystem "random-state/tests"
     :depends-on ("random-state" "fiveam")
-  :components ((:file "tests"))
-    )
+  :components ((:file "tests")))
