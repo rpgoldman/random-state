@@ -31,3 +31,8 @@
 (asdf:defsystem "random-state/documentation"
     :depends-on ("random-state" :documentation-utils)
   :components ((:file "documentation")))
+
+(asdf:defsystem "random-state/tests"
+    :depends-on ("random-state" "fiveam")
+  :components ((:file "tests"))
+    )
