@@ -45,12 +45,12 @@ jobs:
         run: ln -s $GITHUB_WORKSPACE/random-state /github/home/quicklisp/local-projects
 
       - name: SBCL
-        if: ${{ matrix.lisp == sbcl }}
+        if: ${{ matrix.lisp == 'sbcl' }}
         run: sbcl  --disable-debugger --load /github/home/quicklisp/setup.lisp --eval '(ql:quickload "random-state")' --eval '(asdf:test-system "random-state")' --eval '(uiop:quit 0)'
       - name: Allegro
-        if: ${{ matrix.lisp == allegro }}
+        if: ${{ matrix.lisp == 'allegro' }}
         run: alisp -L /github/home/quicklisp/setup.lisp --disable-debugger -e '(ql:quickload "random-state")' -e '(asdf:test-system "random-state")' --kill
       - name: Clozure
-        if: ${{ matrix.lisp == ccl }}
+        if: ${{ matrix.lisp == 'ccl' }}
         run: ccl --batch --load /github/home/quicklisp/setup.lisp --eval '(ql:quickload "random-state")' --eval '(asdf:test-system "random-state")' --eval '(uiop:quit 0)'
         
