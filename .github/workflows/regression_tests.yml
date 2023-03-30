@@ -43,11 +43,11 @@ jobs:
         
       - name: what the heck is going on
         run: |
-          ls /github/workspace
+          ls /
           echo $USER
-          ls /github/home
-          ls /root
-          ls /home
+          ls /github || true
+          ls /root || true
+          ls /home || true
 
       - name: Link the project
         run: ln -s $GITHUB_WORKSPACE/random-state /root/quicklisp/local-projects
