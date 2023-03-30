@@ -40,6 +40,14 @@ jobs:
         
       - name: install quicklisp
         run: install-quicklisp
+        
+      - name: what the heck is going on
+        run: |
+          ls /github/workspace
+          echo $USER
+          ls /github/home
+          ls /root
+          ls /home
 
       - name: Link the project
         run: ln -s $GITHUB_WORKSPACE/random-state /root/quicklisp/local-projects
