@@ -2,6 +2,7 @@
  This file is a part of random-state
  (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
  Author: Nicolas Hafner <shinmera@tymoon.eu>
+ Modifications (c) 2023 Robert P. Goldman
 |#
 
 (in-package #:org.shirakumo.random-state)
@@ -9,18 +10,7 @@
 (declaim (special *generator*) (type (or generator random-state) *generator*))
 
 (declaim (inline random))
-(defun random (max &optional (generator *generator*))
-  (etypecase max
-    ((integer 0)
-     (random-int generator 0 (1- max)))
-    ((short-float 0s0)
-     (random-float generator 0s0 (- max short-float-epsilon)))
-    ((single-float 0f0)
-     (random-float generator 0f0 (- max single-float-epsilon)))
-    ((double-float 0d0)
-     (random-float generator 0d0 (- max double-float-epsilon)))
-    ((long-float 0l0)
-     (random-float generator 0l0 (- max long-float-epsilon)))))
+
 
 (defun random-1d (generator index &optional (seed 0))
   (hash generator index seed))
@@ -136,3 +126,16 @@
        (loop for candidate = (random-bytes generator bits)
              when (<= candidate range)
              return candidate))))
+
+(defun random (max &optional (generator *generator*))
+  (etypecase max
+    ((integer 0)
+     (random-int generator 0 (1- max)))
+    ((short-float 0s0)
+     (random-float generator 0s0 (- max short-float-epsilon)))
+    ((single-float 0f0)
+     (random-float generator 0f0 (- max single-float-epsilon)))
+    ((double-float 0d0)
+     (random-float generator 0d0 (- max double-float-epsilon)))
+    ((long-float 0l0)
+     (random-float generator 0l0 (- max long-float-epsilon)))))

@@ -74,7 +74,10 @@
       whole))
 
 (defgeneric %make-generator (type &key))
-(define-generator-fun seed (generator))
+#+sbcl
+(locally (declare (sb-ext:muffle-conditions style-warning))
+  (define-generator-fun seed (generator)))
+#-sbcl (define-generator-fun seed (generator))
 (define-generator-fun reseed (generator new-seed))
 (define-generator-fun next-byte (generator))
 (define-generator-fun bits-per-byte (generator))
