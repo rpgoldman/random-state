@@ -43,7 +43,12 @@ jobs:
         run: install-quicklisp
 
       - name: Link the project
-        run: ln -s $GITHUB_WORKSPACE/random-state /github/home/quicklisp/local-projects
+        run: |
+          echo "What's in the workspace?"
+          ls $GITHUB_WORKSPACE
+          echo "Do we have quicklisp where we expect it?"
+          ls /github/home
+          ln -s $GITHUB_WORKSPACE/random-state /github/home/quicklisp/local-projects
 
       - name: SBCL
         if: ${{ matrix.lisp == 'sbcl' }}
