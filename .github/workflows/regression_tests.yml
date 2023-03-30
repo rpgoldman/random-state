@@ -54,12 +54,14 @@ jobs:
           ls /home || true
           echo "home directory is:"
           cd ~ ; pwd
+          echo "contents of home directory:"
           ls
+          echo "GITHUB_WORKSPACE is $GITHUB_WORKSPACE"
 
       - name: Link the project
-        run: ln -s $GITHUB_WORKSPACE/random-state /root/quicklisp/local-projects
+        run: ln -s $GITHUB_WORKSPACE/random-state /github/home/quicklisp/local-projects
 
       # Runs a set of commands using the runners shell
       - name: SBCL
         if: ${{ matrix.lisp }} == sbcl
-        run: sbcl --load /root/quicklisp/setup.lisp --disable-debugger --eval '(ql:quickload "random-state")' --eval '(asdf:test-system "random-state")' --eval '(uiop:exit 0)'
+        run: sbcl --load /github/home/quicklisp/setup.lisp --disable-debugger --eval '(ql:quickload "random-state")' --eval '(asdf:test-system "random-state")' --eval '(uiop:exit 0)'
