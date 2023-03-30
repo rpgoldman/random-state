@@ -126,7 +126,12 @@ See HASH-GENERATOR"))
 
 ;; protocol.lisp
 (docs:define-docs
-  (functiond random
+  (variable *generator*
+    "The default random number generator used by RANDOM.
+
+See RANDOM")
+
+  (function random
     "Returns a number in [0, MAX[.
 
 This is a drop-in replacement for CL:RANDOM.
