@@ -6,8 +6,10 @@
 
 (in-package #:org.shirakumo.random-state)
 
+(declaim (special *generator*) (type (or generator random-state) *generator*))
+
 (declaim (inline random))
-(defun random (max &optional (generator *random-state*))
+(defun random (max &optional (generator *generator*))
   (etypecase max
     ((integer 0)
      (random-int generator 0 (1- max)))

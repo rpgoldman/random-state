@@ -34,3 +34,5 @@
 
 (defmethod copy ((generator random-state))
   (make-random-state generator))
+
+(defvar *generator* (make-generator :random-state))
