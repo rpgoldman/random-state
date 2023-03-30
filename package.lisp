@@ -11,6 +11,7 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
   (:shadow #:random)
   ;; generator.lisp
   (:export
+   #:*generator*
    #:global-generator
    #:ensure-generator
    #:list-generator-types
