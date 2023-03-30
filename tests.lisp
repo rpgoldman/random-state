@@ -4,6 +4,13 @@
 
 (in-package random-state-tests)
 
+(defmethod asdf:perform ((op asdf:test-op) (sys (eql (asdf:find-system "random-state/tests"))))
+  (let (success)
+    (let ((*on-failure* nil))
+      (setf success (run! 'random-state-tests)))
+    (unless success
+      (error 'asdf:operation-error :component sys :operation op))))
+
 (def-suite* random-state-tests)
 
 (def-suite* repeatability :in random-state-tests)
