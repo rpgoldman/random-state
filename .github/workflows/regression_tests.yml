@@ -25,9 +25,9 @@ jobs:
     strategy:
       matrix:
         lisp:
-          # - sbcl
-          # - ccl
-          - allegro
+          - sbcl
+          - ccl
+          # - allegro
           # installation of quicklisp fails on Allegro for some reason. Have to fix this later.
     container:
       image: clfoundation/${{ matrix.lisp }}:latest
