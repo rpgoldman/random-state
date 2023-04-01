@@ -22,6 +22,6 @@
    (setf j (logand (1+ j) 4194303))
    (let* ((x (aref q j))
           (tt (fit-bits 32 (+ carry (ash x 28)))))
-     (setf carry (- (ash x -4) (ash tt x)))
-     (setf (aref q j) (- tt x)))
+     (setf carry (- (ash x -4) (if (< tt x) 1 0)))
+     (setf (aref q j) (ldb (byte 32 0) (- tt x))))
    (+ (aref q j) cng xs)))
