@@ -27,4 +27,5 @@
                (:file "squirrel")
                (:file "implementation")
                (:file "documentation"))
-  :depends-on (:documentation-utils))
+  :depends-on (:documentation-utils)
+  :in-order-to ((asdf:test-op (asdf:test-op :random-state-test))))
