@@ -7,6 +7,9 @@
 (in-package #:org.shirakumo.random-state)
 
 (define-generator squirrel 32 (hash-generator) ()
+  (:copy
+   (make-squirrel :%seed (squirrel-%seed generator)
+                  :index (squirrel-index generator)))
   (:hash
    (declare (optimize speed (safety 1)))
    (let ((noise1 #x68E31DA4)
