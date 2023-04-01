@@ -17,26 +17,16 @@
   #-(or)
   (error "Can't retrieve seed from RANDOM-STATE objects on ~a" (lisp-implementation-type)))
 
-#+sbcl
 (defmethod reseed ((generator random-state) seed)
+  #+sbcl
   (let ((seeded (sb-ext:seed-random-state seed)))
     (replace (sb-kernel::random-state-state generator)
-             (sb-kernel::random-state-state seeded))))
-
-#+ccl
-(defmethod reseed ((generator random-state) seed)
-  (declare (ignorable generator) (ignore seed))
-  (values))
-
-#+allegro
-(defmethod reseed ((generator random-state) seed)
-  (setf (excl::random-state-seed generator) seed))
-
-
-#-(or sbcl ccl allegro)
-(defmethod reseed ((generator random-state) seed)
-  (declare (ignorable generator) (ignore seed))
-  (error "Can't reseed RANDOM-STATE objects on ~a" (lisp-implementation-type)))
+             (sb-kernel::random-state-state seeded)))
+  #+allegro
+  (setf (excl::random-state-seed generator) seed)
+  #-(or allegro sbcl)
+  (warn "Can't reseed RANDOM-STATE objects on ~a" (lisp-implementation-type))
+  generator)
 
 (defmethod next-byte ((generator random-state))
   (cl:random most-positive-fixnum generator))
