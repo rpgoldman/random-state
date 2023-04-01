@@ -17,6 +17,7 @@
 (defun (setf global-generator) (value name)
   (setf (gethash name *generators*) value))
 
+#-allegro
 (define-compiler-macro global-generator (&whole whole name &environment env)
   (if (constantp name env)
       `(load-time-value (or (gethash ,name *generators*)
