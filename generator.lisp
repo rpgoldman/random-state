@@ -110,12 +110,15 @@
        (defstruct (,name
                    (:include ,@super)
                    (:constructor ,constructor)
-                   (:copier ,copy)
+                   (:copier NIL)
                    (:predicate NIL))
          ,@slots)
 
        ,@(loop for (type . body) in bodies
                collect (ecase type
+                         (:copy
+                          `(defun ,copy (,generator)
+                             ,@body))
                          (:reseed
                           `(progn (defun ,reseed (,generator ,seed)
                                     (setf (%seed ,generator) ,seed)
@@ -141,7 +144,12 @@
                                       (,hash index (%seed ,generator))))
                                   (defmethod next-byte ((,generator ,name))
                                     (,next ,generator))))))
-       
+
+       ,@(unless (find :copy bodies :key #'car)
+           `((defun ,copy (,generator)
+               (,constructor ,@(loop for binding in bindings
+                                     collect (intern (string (first binding)) "KEYWORD")
+                                     collect `(copy ,(second binding)))))))
        (defmethod copy ((generator ,name))
          (,copy generator))
        (defmethod %make-generator ((type (eql ',name)) &rest initargs &key &allow-other-keys)
