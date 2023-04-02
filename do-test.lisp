@@ -20,7 +20,14 @@
 (handler-case
  (assert (uiop:pathname-equal (asdf:component-pathname (asdf:find-system "random-state"))
                               (uiop:pathname-directory-pathname *load-truename*)))
-  (error () (uiop:quit 2)))
+  (error () (uiop:die 2 "Not loading RANDOM-STATE from the expected location.")))
+
+;;; check for clean build
+(handler-bind
+    ((error #'(lambda (c) (uiop:die 3 "Failed to build cleanly with error:~%~T~a" c))))
+  (let ((asdf:*compile-file-failure-behaviour* :error)
+        (asdf:*compile-file-warnings-behaviour* :error))
+    (ql:quickload "random-state" :silent nil :verbose t)))
 
 (ql:quickload "random-state-test")
 
