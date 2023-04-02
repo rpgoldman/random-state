@@ -95,6 +95,16 @@
 (defmethod seed ((generator generator))
   (%seed generator))
 
+(defmethod copy ((thing number))
+  thing)
+
+(defmethod copy ((thing array))
+  (make-array (array-dimensions thing)
+              :element-type (array-element-type thing)
+              :fill-pointer (array-has-fill-pointer-p thing)
+              :adjustable (adjustable-array-p thing)
+              :initial-contents thing))
+
 (defmacro define-generator (name bits-per-byte super slots &body bodies)
   (let ((constructor (intern* 'make name))
         (copy (intern* 'copy name))
