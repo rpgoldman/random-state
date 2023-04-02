@@ -25,7 +25,5 @@
                (:file "tt800")
                (:file "kiss")
                (:file "squirrel")
-               (:file "implementation")
-               (:file "documentation"))
-  :depends-on (:documentation-utils)
+               (:file "implementation"))
   :in-order-to ((asdf:test-op (asdf:test-op :random-state-test))))
