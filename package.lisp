@@ -52,4 +52,5 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
    #:rc4
    #:squirrel
    #:tt800
-   #:kiss11))
+   #:kiss11
+   #:adler32))

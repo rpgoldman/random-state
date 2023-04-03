@@ -25,6 +25,7 @@
                (:file "tt800")
                (:file "kiss")
                (:file "squirrel")
+               (:file "adler32")
                (:file "implementation")
                (:file "documentation"))
   :depends-on (:documentation-utils)
