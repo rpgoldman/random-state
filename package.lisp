@@ -54,4 +54,5 @@ Author: Nicolas Hafner <shinmera@tymoon.eu>
    #:tt800
    #:kiss11
    #:adler32
-   #:murmurhash3))
+   #:murmurhash3
+   #:cityhash-64))

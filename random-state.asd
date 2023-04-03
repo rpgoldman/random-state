@@ -27,6 +27,7 @@
                (:file "squirrel")
                (:file "adler32")
                (:file "murmurhash")
+               (:file "cityhash")
                (:file "implementation")
                (:file "documentation"))
   :depends-on (:documentation-utils)
