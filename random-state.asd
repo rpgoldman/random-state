@@ -26,6 +26,7 @@
                (:file "kiss")
                (:file "squirrel")
                (:file "adler32")
+               (:file "murmurhash")
                (:file "implementation")
                (:file "documentation"))
   :depends-on (:documentation-utils)
