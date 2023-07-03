@@ -1,9 +1,3 @@
-#|
- This file is a part of random-state
- (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (defpackage #:random-state-viewer
   (:nicknames #:org.shirakumo.random-state.viewer)
   (:use #:cl+qt)

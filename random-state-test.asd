@@ -1,12 +1,6 @@
-#|
- This file is a part of random-state
- (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
-|#
-
 (asdf:defsystem random-state-test
   :version "1.0.0"
-  :author "Nicolas Hafner <shinmera@tymoon.eu>"
+  :author "Yukari Hafner <shinmera@tymoon.eu>"
   :license "zlib"
   :description "Portable random number generation."
   :homepage "https://Shinmera.github.io/random-state/"

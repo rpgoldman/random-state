@@ -1,10 +1,3 @@
-#|
- This file is a part of random-state
- (c) 2015 Shirakumo http://tymoon.eu (shinmera@tymoon.eu)
- Author: Nicolas Hafner <shinmera@tymoon.eu>
- Modifications (c) 2023 Robert P. Goldman
-|#
-
 (in-package #:org.shirakumo.random-state)
 
 (defvar *generator* *random-state*)
