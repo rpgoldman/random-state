@@ -23,6 +23,7 @@
    #:rewind)
   ;; protocol.lisp
   (:export
+   #:draw
    #:random
    #:random-1d
    #:random-2d
@@ -35,7 +36,9 @@
    #:random-int)
   ;; toolkit.lisp
   (:export
-   #:hopefully-sufficiently-random-seed)
+   #:hopefully-sufficiently-random-seed
+   #:histogram
+   #:print-histogram)
   ;; * rngs
   (:export
    #:linear-congruence

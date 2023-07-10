@@ -125,6 +125,12 @@ See HASH-GENERATOR"))
 
 See RANDOM")
 
+  (function draw
+    "Returns a vector with N random samples in [0,1[.
+
+See ENSURE-GENERATOR
+See RANDOM-UNIT")
+
   (function random
     "Returns a number in [0, MAX[.
 
@@ -224,7 +230,25 @@ See RANDOM-BYTES"))
 
 On Unix, this reads 64 bits from /dev/urandom
 On Windows+SBCL, this reads 64 bits from SB-WIN32:CRYPT-GEN-RANDOM
-Otherwise it uses an XOR of GET-INTERNAL-REAL-TIME and GET-UNIVERSAL-TIME."))
+Otherwise it uses an XOR of GET-INTERNAL-REAL-TIME and GET-UNIVERSAL-TIME.")
+
+  (function histogram
+    "Compute a histogram from the given sample vector.
+
+This will collect the samples into N bins, where the value of the bin
+is the contribution of the samples in the bin towards all samples.
+
+See PRINT-HISTOGRAM
+See DRAW")
+
+  (function print-histogram
+    "Display the histogram vector in a user-friendly manner.
+
+Prints a visual representation of the deviation of each bin from the
+ideal uniform distribution as well as the cumulative deviation of all
+bins.
+
+See HISTOGRAM"))
 
 ;; * RNGs
 (docs:define-docs

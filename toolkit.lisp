@@ -75,3 +75,25 @@
               :fill-pointer (array-has-fill-pointer-p thing)
               :adjustable (adjustable-array-p thing)
               :initial-contents thing))
+
+(defun histogram (samples bins)
+  (let ((histogram (make-array bins))
+        (sample-contribution (/ (length samples))))
+    (loop for sample across samples
+          do (incf (aref histogram (floor (* sample bins)))
+                   sample-contribution))
+    histogram))
+
+(defun print-histogram (histogram &key (stream *standard-output*) (width 70))
+  (let ((half-width (/ width 2))
+        (total 0.0))
+    (loop for bin across histogram
+          for deviation = (* 100 (- bin (/ (length histogram))))
+          for chars = (floor (* width deviation))
+          do (format stream "~6,3@f% ~v@{░~}~v@{█~}~v@{░~}~%" deviation
+                     (min half-width (- half-width chars))
+                     (abs chars)
+                     (min half-width (+ half-width chars))
+                     NIL)
+             (incf total (abs deviation)))
+    (format stream "Cumulative deviation: ~6,3f%~%" total)))

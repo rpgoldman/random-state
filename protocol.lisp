@@ -4,6 +4,10 @@
 
 (declaim (inline random))
 
+(defun draw (n &optional (generator *generator*))
+  (let ((samples (make-array n :element-type 'single-float))
+        (generator (ensure-generator generator)))
+    (map-into samples (lambda () (random-unit generator)))))
 
 (defun random-1d (generator index &optional (seed 0))
   (hash generator index seed))
