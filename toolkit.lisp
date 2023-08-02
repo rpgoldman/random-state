@@ -77,7 +77,6 @@
               :initial-contents thing))
 
 (defun histogram (rng bins &key (samples (floor 1e8)) (width 80) (stream *standard-output*))
-  (declare (optimize speed))
   (check-type samples (unsigned-byte 64))
   (let ((histogram (make-array bins))
         (sample-contribution (/ samples))
@@ -88,11 +87,14 @@
       (dotimes (i samples)
         (when (/= (percentage i) (percentage (1+ i)))
           (format stream "█"))
-        (incf (aref histogram (floor (* (random 1.0 rng) bins)))
-              sample-contribution)))
+        (locally (declare (optimize speed))
+          (incf (aref histogram (floor (* (random 1.0 rng) bins)))
+                sample-contribution))))
     (format stream " 100%~%")
-    (format stream "Generation took: ~6,3fs~%" (/ (- (get-internal-real-time) start)
-                                                  INTERNAL-TIME-UNITS-PER-SECOND))
+    (let ((duration (/ (- (get-internal-real-time) start)
+                       INTERNAL-TIME-UNITS-PER-SECOND)))
+      (format stream "Generation took: ~6,3fs, ~fμs/sample~%"
+              duration (* 1000000 (/ duration samples))))
     histogram))
 
 (defun print-histogram (histogram &key (stream *standard-output*) (width 80))
