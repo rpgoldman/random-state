@@ -2,6 +2,39 @@
 
 (defvar *generator* *random-state*)
 
+(define-compiler-macro random-float (&whole whole generator from to &environment env)
+  (cond ((and (constantp from env) (constantp to env))
+         `(+ (load-time-value (min ,to ,from))
+             (* (load-time-value (abs (- ,to ,from)))
+                (scale-float (float (random-bytes ,generator (load-time-value (float-digits (- ,to ,from)))) ,from)
+                             (load-time-value (- (float-digits (- ,to ,from))))))))
+        ((constantp from env)
+         `(let ((from ,from)
+                (to ,to))
+            (when (< to from)
+              (rotatef from to))
+            (+ from
+               (* (- to from)
+                  (scale-float (float (random-bytes ,generator (load-time-value (float-digits ,from))) ,from)
+                               (load-time-value (- (float-digits ,from))))))))
+        ((constantp to env)
+         `(let ((from ,from)
+                (to ,to))
+            (when (< to from)
+              (rotatef from to))
+            (+ from
+               (* (- to from)
+                  (scale-float (float (random-bytes ,generator (load-time-value (float-digits ,to))) ,to)
+                               (load-time-value (- (float-digits ,to))))))))
+        (T
+         whole)))
+
+(define-compiler-macro random-unit (&whole whole generator &optional (type ''single-float) &environment env)
+  (if (constantp type env)
+      `(scale-float (coerce (random-bytes ,generator (load-time-value (float-digits (coerce 0 ,type)))) ,type)
+                    (load-time-value (- (float-digits (coerce 0 ,type)))))
+      whole))
+
 (declaim (inline random))
 
 (defun random (max &optional (generator *generator*))
@@ -18,13 +51,6 @@
     #-ccl ; apparently ccl's LONG-FLOAT and DOUBLE-FLOAT are the same
     ((long-float 0l0)
      (random-float generator 0l0 (- max long-float-epsilon)))))
-
-
-(define-compiler-macro random-unit (&whole whole generator &optional (type ''single-float) &environment env)
-  (if (constantp type env)
-      `(scale-float (coerce (random-bytes ,generator (load-time-value (float-digits (coerce 0 ,type)))) ,type)
-                    (load-time-value (- (float-digits (coerce 0 ,type)))))
-      whole))
 
 (defun draw (n &optional (generator *generator*))
   (let ((samples (make-array n :element-type 'single-float))
@@ -89,32 +115,7 @@
       (rotatef from to))
     (+ from (* (- to from) (random-unit generator (type-of from))))))
 
-(define-compiler-macro random-float (&whole whole generator from to &environment env)
-  (cond ((and (constantp from env) (constantp to env))
-         `(+ (load-time-value (min ,to ,from))
-             (* (load-time-value (abs (- ,to ,from)))
-                (scale-float (float (random-bytes ,generator (load-time-value (float-digits (- ,to ,from)))) ,from)
-                             (load-time-value (- (float-digits (- ,to ,from))))))))
-        ((constantp from env)
-         `(let ((from ,from)
-                (to ,to))
-            (when (< to from)
-              (rotatef from to))
-            (+ from
-               (* (- to from)
-                  (scale-float (float (random-bytes ,generator (load-time-value (float-digits ,from))) ,from)
-                               (load-time-value (- (float-digits ,from))))))))
-        ((constantp to env)
-         `(let ((from ,from)
-                (to ,to))
-            (when (< to from)
-              (rotatef from to))
-            (+ from
-               (* (- to from)
-                  (scale-float (float (random-bytes ,generator (load-time-value (float-digits ,to))) ,to)
-                               (load-time-value (- (float-digits ,to))))))))
-        (T
-         whole)))
+
 
 (defun random-int (generator from to)
   (declare (optimize speed))
