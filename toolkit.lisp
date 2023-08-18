@@ -77,7 +77,7 @@
               :initial-contents thing))
 
 (defun histogram (rng bins &key (samples (floor 1e8)) (width 80) (stream *standard-output*))
-  (declare (notinline random))
+  #-ccl(declare (notinline random))
   (check-type samples (unsigned-byte 64))
   (let ((histogram (make-array bins))
         (sample-contribution (/ samples))
