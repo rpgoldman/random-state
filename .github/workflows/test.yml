@@ -12,17 +12,17 @@ jobs:
     strategy:
       matrix:
         # clisp doesn't run on ubuntu VMs currently
-        lisp: [sbcl-bin,sbcl,ccl,ccl32,ecl,allegro,cmucl,abcl]
+        lisp: [sbcl-bin,ccl-bin/1.12.2,ecl,allegro/10.1express,cmu-bin/21e,abcl/1.9.2]
         os: [ubuntu-latest]
       fail-fast: false
     runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       
     - name: cache .roswell
       id: cache-dot-roswell
-      uses: actions/cache@v1
+      uses: actions/cache@v3
       with:
         path: ~/.roswell
         key: ${{ runner.os }}-dot-roswell-${{ matrix.lisp }}-${{ hashFiles('**/*.asd') }}
