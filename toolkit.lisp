@@ -66,15 +66,7 @@
 (defmacro update (bits place op &rest args)
   `(setf ,place (fit-bits ,bits (,op ,place ,@args))))
 
-(defmethod copy ((thing number))
-  thing)
 
-(defmethod copy ((thing array))
-  (make-array (array-dimensions thing)
-              :element-type (array-element-type thing)
-              :fill-pointer (array-has-fill-pointer-p thing)
-              :adjustable (adjustable-array-p thing)
-              :initial-contents thing))
 
 
 (defun list-dim (list)
