@@ -18,6 +18,11 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+    - name: prepare
+      uses: 40ants/setup-lisp@v2
+      with:
+        roswell-version: v22.12.14.113
+        asdf-version: 3.3.6
     - uses: actions/checkout@v3
       
     - name: cache .roswell
@@ -29,11 +34,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-dot-roswell-${{ matrix.lisp }}-
           ${{ runner.os }}-dot-roswell-
-
-    - name: install roswell
-      env:
-       LISP: ${{ matrix.lisp }}
-      run: curl -L https://raw.githubusercontent.com/roswell/roswell/master/scripts/install-for-ci.sh | sh -x
 
     - name: install parachute
       run: |
