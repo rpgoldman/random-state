@@ -67,6 +67,7 @@
   `(setf ,place (fit-bits ,bits (,op ,place ,@args))))
 
 
+
 (defun list-dim (list)
   (list* (length list)
          (when (listp (first list))
