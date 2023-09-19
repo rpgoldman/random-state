@@ -12,11 +12,13 @@
 
 (in-package :test-random-state)
 
-(load (merge-pathnames (make-pathname :directory '(:relative "quicklisp") :name "setup" :type "lisp")
-                       (user-homedir-pathname)))
+(handler-bind ((error #'(lambda (c)
+                          (uiop:die 4 "Error setting up for build: ~a" c))))
+  (load (merge-pathnames (make-pathname :directory '(:relative "quicklisp") :name "setup" :type "lisp")
+                         (user-homedir-pathname)))
 
-(push (namestring (uiop:pathname-directory-pathname *load-truename*)) ql:*local-project-directories*)
-(ql:quickload "documentation-utils")
+  (push (namestring (uiop:pathname-directory-pathname *load-truename*)) (symbol-value (uiop:intern* '#:*local-project-directories* :ql)))
+  (uiop:symbol-call :ql 'quickload "documentation-utils"))
 
 (handler-case
  (assert (uiop:pathname-equal (asdf:component-pathname (asdf:find-system "random-state"))
