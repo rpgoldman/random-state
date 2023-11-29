@@ -2,6 +2,7 @@
 
 (defvar *generator* *random-state*)
 
+#-allegro
 (define-compiler-macro random-float (&whole whole generator from to &environment env)
   (cond ((and (constantp from env) (constantp to env))
          `(+ (load-time-value (min ,to ,from))
@@ -29,6 +30,7 @@
         (T
          whole)))
 
+#-allegro
 (define-compiler-macro random-unit (&whole whole generator &optional (type ''single-float) &environment env)
   (if (constantp type env)
       `(scale-float (coerce (random-bytes ,generator (load-time-value (float-digits (coerce 0 ,type)))) ,type)
@@ -147,4 +149,3 @@
        (loop for candidate = (random-bytes generator bits)
              when (<= candidate range)
              return candidate))))
-
