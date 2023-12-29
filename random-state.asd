@@ -31,6 +31,8 @@
                (:file "xorshift")
                (:file "implementation")
                (:file "histogram")
-               (:file "documentation"))
-  :depends-on (:documentation-utils)
-  :in-order-to ((asdf:test-op (asdf:test-op :random-state-test))))
+               ))
+
+(asdf:defsystem "random-state/documentation"
+    :depends-on ("random-state" :documentation-utils)
+  :components ((:file "documentation")))
