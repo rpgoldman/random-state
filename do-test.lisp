@@ -37,7 +37,9 @@
                    (unless (typep x 'style-warning)
                      (push x warnings))))
       (error #'(lambda (c) (uiop:die 3 "Failed to build with error:~%~T~a" c))))
-   (ql:quickload "random-state" :silent nil :verbose t))
+   (asdf:compile-system "random-state" :force t)
+   ;; (ql:quickload "random-state" :silent nil :verbose t)
+   )
   (when warnings
     (format t "Failed to build cleanly: got WARNINGs:~%~{~t~a~%~}" warnings))
   (when style-warnings
