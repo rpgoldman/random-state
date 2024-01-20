@@ -31,6 +31,7 @@ See RESEED
 See NEXT-BYTE
 See BITS-PER-BYTE
 See COPY
+See MULTIVARIATE-P
 See MAKE-GENERATOR
 See STATEFUL-GENERATOR
 See HASH-GENERATOR")
@@ -52,8 +53,19 @@ See GENERATOR")
   (function next-byte
     "Returns the next byte (not octet) of random state.
 
-The returned integer must be in the range of
+The value returned is in accordance to the spec of BITS-PER-BYTE.
+If the spec is an integer, the returned integer must be in the range
+of
+
   [ 0, 1 << BITS-PER-BYTE GENERATOR [
+
+If the spec is SINGLE-FLOAT or DOUBLE-FLOAT, the returned float must
+be in the range of
+
+  [ 0, 1 [
+
+If the spec is a list, the returned value is an array with each of its
+elements according to the above description.
 
 See RANDOM-INT
 See RANDOM-BYTES
@@ -61,6 +73,17 @@ See GENERATOR")
 
   (function bits-per-byte
     "Returns the number of bits of randomness returned by the generator for each NEXT-BYTE call.
+
+This may either be an integer, describing the bits of randomness returned,
+the symbol SINGLE-FLOAT or DOUBLE-FLOAT in which case NEXT-BYTE returns a unit float,
+or a list composed of the aforementioned, in which case NEXT-BYTE returns an array
+of such bytes.
+
+See NEXT-BYTE
+See GENERATOR")
+
+  (function multivariate-p
+    "Returns true if the generator is multivariate and returns an array of bytes on NEXT-BYTE.
 
 See NEXT-BYTE
 See GENERATOR")

@@ -14,6 +14,7 @@
    #:reseed
    #:next-byte
    #:bits-per-byte
+   #:multivariate-p
    #:copy
    #:make-generator
    #:define-generator
@@ -41,6 +42,7 @@
    #:print-histogram)
   ;; * rngs
   (:export
+   #:hammersley
    #:linear-congruence
    #:mersenne-twister-32
    #:mersenne-twister-64

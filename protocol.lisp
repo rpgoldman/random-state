@@ -74,13 +74,17 @@
   (declare (optimize speed))
   (let* ((generator (ensure-generator generator))
          (chunk (bits-per-byte generator)))
-    (declare (type (unsigned-byte 8) bits chunk))
-    (cond ((= bits chunk)
+    (declare (type (unsigned-byte 8) bits))
+    (cond ((not (integerp chunk))
+           (error "This generator does not output bits of randomness.~%  ~a~%generates~%  ~a"
+                  generator chunk))
+          ((= bits chunk)
            (next-byte generator))
           ((< bits chunk)
            (fit-bits bits (next-byte generator)))
           (T
            (let ((random 0))
+             (declare (type (unsigned-byte 8) chunk))
              ;; Fill upper bits
              (loop for i downfrom (- bits chunk) above 0 by chunk
                    for byte = (next-byte generator)
@@ -103,10 +107,14 @@
        (map-into sequence (lambda () (next-byte generator)))))))
 
 (defun random-unit (generator &optional (type 'single-float))
-  (let* ((bits (float-digits (coerce 0 type)))
-         (random (random-bytes generator bits)))
-    ;; KLUDGE: this sucks. Would be better if we could directly fill the mantissa.
-    (scale-float (coerce random type) (- bits))))
+  (etypecase (bits-per-byte generator)
+    ((member single-float double-float)
+     (coerce (random-byte generator) type))
+    (integer
+     (let* ((bits (float-digits (coerce 0 type)))
+            (random (random-bytes generator bits)))
+       ;; KLUDGE: this sucks. Would be better if we could directly fill the mantissa.
+       (scale-float (coerce random type) (- bits))))))
 
 (defun random-float (generator from to)
   (let ((from from)
@@ -114,8 +122,6 @@
     (when (< to from)
       (rotatef from to))
     (+ from (* (- to from) (random-unit generator (type-of from))))))
-
-
 
 (defun random-int (generator from to)
   (declare (optimize speed))
