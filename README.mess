@@ -1,5 +1,5 @@
 ## About random-state
-This is a collection of pseudo random number generators (PRNGs). While Common Lisp does provide a ``RANDOM`` function, it does not allow the user to pass an explicit seed, nor to portably exchange the random state between implementations. This can be a headache in cases like games, where a controlled seeding process is very useful.
+This is a collection of pseudo random number generators (PRNGs) and quasi-random number generators (QRNGs). While Common Lisp does provide a ``RANDOM`` function, it does not allow the user to pass an explicit seed, nor to portably exchange the random state between implementations. This can be a headache in cases like games, where a controlled seeding process is very useful.
 
 ## How To
 For both curiosity and convenience, this library offers multiple algorithms to generate random numbers, as well as a bunch of generally useful methods to produce desired ranges.

@@ -1,0 +1,23 @@
+(in-package #:org.shirakumo.random-state)
+
+(define-generator hammersley (make-list (length (hammersley-leap generator)) :initial-element 'single-float) (hash-generator)
+  ((leap (make-array 3 :element-type '(unsigned-byte 32) :initial-element 1) :type (simple-array (unsigned-byte 32) (*))))
+  (:copy
+   (make-hammersley :%seed (hammersley-%seed generator)
+                    :index (hammersley-index generator)
+                    :leap (make-array (length (hammersley-leap generator))
+                                      :element-type '(unsigned-byte 32)
+                                      :initial-contents (hammersley-leap generator))))
+  (:hash
+   (flet ((dim (base leap seed)
+            (let ((seed2 (+ seed (* index leap)))
+                  (base-inv (float (/ base) 0f0))
+                  (r 0.0))
+              (loop while (/= 0 seed2)
+                    do (incf r (* (mod seed2 base) base-inv))
+                       (setf base-inv (/ base-inv base))
+                       (setf seed2 (truncate seed2 base))
+                    finally (return r)))))
+     (let ((result (make-array (length leap) :element-type 'single-float)))
+       (dotimes (i (length result) result)
+         (setf (aref result i) (dim (prime (1+ i)) (aref leap i) (ldb (byte 8 i) seed))))))))

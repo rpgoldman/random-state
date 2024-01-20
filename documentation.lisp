@@ -275,6 +275,17 @@ See HISTOGRAM"))
 
 ;; * RNGs
 (docs:define-docs
+  (type hammersley
+    "The Hammersley quasi-random number sequence.
+
+This is a multivariate generator with default dimensionality of 3.
+To change the dimensionality, pass a :LEAP initarg that is an array of
+the desired dimensionality. Each element in the LEAP array should be
+an integer greater or equal to 1, and can be used to advance the
+sequence more quickly for each dimension.
+
+See https://en.wikipedia.org/wiki/Low-discrepancy_sequence")
+  
   (type linear-congruence
     "A very simple random number generator based on linear congruence.
 
