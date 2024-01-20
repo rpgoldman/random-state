@@ -318,6 +318,15 @@ See http://www.pcg-random.org")
 
 See https://en.wikipedia.org/wiki/RC4")
 
+  (type sobol
+    "The Sobol quasi-random number sequence.
+
+This is a multivariate generator with default dimensionality of 3.
+You can pass the :DIM initarg to specify the dimensionality of the
+result. :DIM must be in [ 1, 1111 [
+
+See https://en.wikipedia.org/wiki/Low-discrepancy_sequence")
+
   (type squirrel
     "An adaptation of the \"squirrel hash v3\".
 
