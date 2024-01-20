@@ -90,18 +90,18 @@
   (%seed generator))
 
 (defmacro define-generator (name bits-per-byte super slots &body bodies)
-  (let ((constructor (intern* 'make name))
-        (copy (intern* 'copy name))
-        (reseed (intern* name 'reseed))
-        (next (intern* name 'next))
-        (hash (intern* name 'hash))
-        (bindings (append (loop for (slot) in slots collect
-                                `(,slot (,(intern* name slot) generator)))
-                          (loop for (slot) in (rest super) collect
-                                `(,slot (,(intern* (first super) slot) generator)))))
-        (generator (intern* 'generator))
-        (seed (intern* 'seed))
-        (index (intern* 'index)))
+  (let* ((constructor (intern* 'make name))
+         (copy (intern* 'copy name))
+         (reseed (intern* name 'reseed))
+         (next (intern* name 'next))
+         (hash (intern* name 'hash))
+         (generator (intern* 'generator))
+         (bindings (append (loop for (slot) in slots collect
+                                 `(,slot (,(intern* name slot) ,generator)))
+                           (loop for (slot) in (rest super) collect
+                                 `(,slot (,(intern* (first super) slot) ,generator)))))
+         (seed (intern* 'seed))
+         (index (intern* 'index)))
     `(progn
        (pushnew ',name *generator-types*)
        
