@@ -131,15 +131,15 @@
                                   (defmethod next-byte ((,generator ,name))
                                     (,next ,generator))))
                          (:hash
-                          `(progn (defun ,hash (,index ,seed)
+                          `(progn (defun ,hash (,index ,seed ,@(mapcar #'first bindings))
                                     (declare (type (unsigned-byte 64) ,index ,seed))
                                     ,@body)
                                   (defmethod hash ((,generator ,name) ,index ,seed)
-                                    (,hash ,index ,seed))
+                                    (,hash ,index ,seed ,@(mapcar #'second bindings)))
                                   (defun ,next (,generator)
                                     (let ((index (fit-bits 64 (1+ (index ,generator)))))
                                       (setf (index ,generator) index)
-                                      (,hash index (%seed ,generator))))
+                                      (,hash index (%seed ,generator) ,@(mapcar #'second bindings))))
                                   (defmethod next-byte ((,generator ,name))
                                     (,next ,generator))))))
 
