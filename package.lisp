@@ -42,26 +42,27 @@
    #:print-histogram)
   ;; * rngs
   (:export
+   #:adler32
+   #:cityhash-64
    #:hammersley
+   #:kiss11
    #:linear-congruence
    #:mersenne-twister-32
    #:mersenne-twister-64
    #:middle-square
+   #:murmurhash3
    #:pcg
    #:rc4
+   #:sobol
    #:squirrel
    #:tt800
-   #:kiss11
-   #:adler32
-   #:murmurhash3
-   #:cityhash-64
+   #:xorshift-1024*
+   #:xorshift-128
+   #:xorshift-128+
    #:xorshift-32
    #:xorshift-64
-   #:xorshift-128
    #:xorshift-64*
-   #:xorshift-1024*
    #:xorwow
-   #:xorshift-128+
    #:xoshiro-128**
    #:xoshiro-128+
    #:xoshiro-256**
