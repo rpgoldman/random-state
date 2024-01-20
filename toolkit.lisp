@@ -113,3 +113,19 @@
              (incf total (abs deviation)))
     (format stream "Cumulative deviation: ~6,3f%~%" total)
     histogram))
+
+(defun list-dim (list)
+  (list* (length list)
+         (when (listp (first list))
+           (list-dim (first list)))))
+
+(defmacro %arr (type &rest elements)
+  `(make-array ',(list-dim elements)
+               :element-type ',type
+               :initial-contents ',elements))
+
+(defmacro define-pregenerated (name contents)
+  `(progn
+     (let ((contents ,contents))
+       (defun ,name () contents))
+     (define-symbol-macro ,name (,name))))

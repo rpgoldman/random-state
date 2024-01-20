@@ -17,6 +17,7 @@
                (:file "middle-square")
                (:file "pcg")
                (:file "rc4")
+               (:file "sobol")
                (:file "tt800")
                (:file "kiss")
                (:file "squirrel")
