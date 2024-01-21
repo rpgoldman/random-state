@@ -107,6 +107,61 @@ return the same sequence of numbers.
 
 See RESEED
 See GENERATOR")
+  
+  (function define-generator
+    "Define a new random number generator type.
+
+BITS-PER-BYTE is a form that should evaluate to the byte spec for the
+generator.
+
+SUPER should be a list of the following structure:
+
+  SUPER     ::= (type SLOT*)
+  SLOT      ::= (slot-name initform)
+  type      --- The structure-type name to use as supertype
+  slot-name --- The name of a slot in the supertype
+  initform  --- The initial value for the slot
+
+SLOTS should be a list of additional structure slot specs to hold the
+generator's state.
+
+BODIES should be any number of body expressions, each of which is a
+list composed of a body type and any number of body forms, each of
+which are evaluated in an environment where every specified slot in
+SLOTS as well as every specified supertype slot in SUPER is
+symbol-macrolet-bound to their respective name. The following body
+types are permitted:
+
+  :COPY   --- Provides the body forms for the COPY function. The
+              generator instance is bound to GENERATOR. If this body
+              expression is not provided, a copy function based on the
+              SLOTS is automatically provided for you.
+              This must be provided for HASH-GENERATORs.
+  :RESEED --- Provides the body forms for the RESEED function. The
+              generator instance is bound to GENERATOR and the seed to
+              SEED.
+              This must be provided for STATEFUL-GENERATORs.
+  :NEXT   --- Provides the body forms for the NEXT-BYTE function. The
+              generator instance is bound to GENERATOR. Must return a
+              suitable byte for the generator.
+              This must be provided for STATEFUL-GENERATORs.
+  :HASH   --- Provides the stateless hashing function. The generator
+              instance is notably NOT bound. However, the 64-bit index
+              to hash is bound to INDEX. This will also automatically
+              provide the NEXT-BYTE function for you.
+              This must be provided for HASH-GENERATORs.
+
+Each of the additional bindings in the body expressions is bound to a
+symbol from the current package.
+
+See BITS-PER-BYTE
+See RESEED
+See NEXT-BYTE
+See HASH
+See COPY
+See HASH-GENERATOR
+See STATEFUL-GENERATOR
+See GENERATOR")
 
   (type stateful-generator
     "Superclass for all generators that rely on state to produce random numbers.
