@@ -52,6 +52,7 @@
    #:middle-square
    #:murmurhash3
    #:pcg
+   #:quasi
    #:rc4
    #:sobol
    #:squirrel

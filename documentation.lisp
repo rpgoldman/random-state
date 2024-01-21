@@ -388,6 +388,15 @@ See https://en.wikipedia.org/wiki/MurmurHash")
 
 See http://www.pcg-random.org")
 
+  (type quasi
+    "A quasi-random number generator based on a uniform RNG.
+
+When constructing the generator you may pass the :SOURCE initarg,
+which should be a GENERATOR instance to use as a source of
+randomness. By default the current value of *GENERATOR* is used.
+
+See https://en.wikipedia.org/wiki/Low-discrepancy_sequence")
+
   (type rc4
     "The RC4 cryptographic random number generator.
 
