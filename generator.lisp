@@ -32,7 +32,7 @@
               (,name (global-generator ,gen) ,@argsyms)))))
 
 (defun list-generator-types ()
-  *generator-types*)
+  (setf *generator-types* (sort *generator-types* #'string<)))
 
 (defstruct (generator
             (:constructor NIL)
