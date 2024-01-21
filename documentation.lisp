@@ -378,6 +378,11 @@ See http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/VERSIONS/C-LANG/mt19937-64.c
 
 See https://en.wikipedia.org/wiki/Middle-square_method")
 
+  (type murmurhash3
+    "A hash-based RNG using the Murmurhash3 method.
+
+See https://en.wikipedia.org/wiki/MurmurHash")
+
   (type pcg
     "An adaptation of the PCG rng.
 
