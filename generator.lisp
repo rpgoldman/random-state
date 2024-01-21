@@ -171,9 +171,9 @@
 
 (defmethod %make-generator ((type symbol) &rest args)
   (let ((name (find-symbol (string type) #.*package*)))
-    (if name
+    (if (and name (member name *generator-types*))
         (apply #'%make-generator name args)
-        (call-next-method))))
+        (error "No generator with name ~s known." type))))
 
 (defstruct (hash-generator
             (:include generator)
