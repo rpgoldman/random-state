@@ -1,107 +1,85 @@
-(defpackage #:random-state-viewer
-  (:nicknames #:org.shirakumo.random-state.viewer)
-  (:use #:cl+qt)
+(defpackage #:org.shirakumo.random-state.viewer
+  (:use #:cl)
+  (:local-nicknames
+   (#:random #:org.shirakumo.random-state))
   (:export
-   #:main))
+   #:generate
+   #:generate-all))
 
 (in-package #:org.shirakumo.random-state.viewer)
-(in-readtable :qtools)
 
-(defvar *generators* '(("Linear Congruence" . random-state::linear-congruence)
-                       ("Mersenne Twister 32" . random-state::mersenne-twister-32)
-                       ("Mersenne Twister 64" . random-state::mersenne-twister-64)
-                       ("Middle Square" . random-state::middle-square)
-                       ("PCG" . random-state::pcg)
-                       ("RC4" . random-state::rc4)
-                       ("TT800" . random-state::tt800)
-                       ("Xorshift 32" . random-state::xorshift-32)
-                       ("Xorshift 64" . random-state::xorshift-64)
-                       ("Xorshift 128" . random-state::xorshift-128)
-                       ("Xorwow" . random-state::xorwow)
-                       ("Xorshift 64*" . random-state::xorshift-64*)
-                       ("Xorshift 128*" . random-state::xorshift-128*)
-                       ("Xorshift 128+" . random-state::xorshift-128+)
-                       ("Xoshiro 256**" . random-state::xoshiro-256**)
-                       ("Xoshiro 256+" . random-state::xoshiro-256+)))
+(defun tempdir ()
+  #+windows (merge-pathnames #p"AppData/Local/Temp/" (user-homedir-pathname))
+  #+unix #p"/tmp/"
+  #-(or windows unix) (user-homedir-pathname))
 
-(define-widget viewer (QWidget)
-  ((buffer :initform NIL :accessor buffer)))
+(defun random-file (generator)
+  (make-pathname :name (format NIL "~a-~a" (type-of generator) (get-universal-time))
+                 :type "png"
+                 :defaults (tempdir)))
 
-(define-subwidget (viewer timer) (q+:make-qtimer viewer)
-  (setf (q+:single-shot timer) NIL)
-  (q+:start timer (floor (/ 1000 30))))
+(defun generic-open (path)
+  #+windows
+  (uiop:launch-program (list "explorer.exe" (uiop:native-namestring path)))
+  #+(and unix (not darwin))
+  (uiop:launch-program (list "xdg-open" (uiop:native-namestring path)))
+  #+darwin
+  (uiop:launch-program (list "open" (uiop:native-namestring path))))
 
-(define-slot (viewer tick) ()
-  (declare (connected timer (timeout)))
-  (q+:repaint viewer))
+(defun generate (generator &key file (size 512) (color :grayscale) (open T))
+  "Generates a PNG of random samples from the generator.
 
-(define-override (viewer paint-event) (ev)
-  (when buffer
-    (with-finalizing ((painter (q+:make-qpainter viewer)))
-      (q+:draw-image painter 0 0 buffer))))
+GENERATOR may be T (for the *GENERATOR*) a RANDOM-STATE, a GENERATOR,
+or any other argument permissible for MAKE-GENERATOR.
 
-(defmethod random-color ((generator random-state::generator))
-  (let* ((gray (random-state::random-int generator 0 255))
-         (a gray))
-    (setf (ldb (byte 8 8) a) gray)
-    (setf (ldb (byte 8 16) a) gray)
-    a))
+FILE may be a path to save the file to, or NIL in which case a
+temporary file name is chosen for you.
 
-(defmethod generate ((viewer viewer) (generator random-state::generator))
-  (let ((buffer (buffer viewer)))
-    (unless (and buffer
-                 (= (q+:width buffer) (q+:width viewer))
-                 (= (q+:height buffer) (q+:height viewer)))
-      (setf (buffer viewer) (q+:make-qimage (q+:width viewer) (q+:height viewer) (q+:qimage.format_RGB32)))
-      (finalize buffer)
-      (setf buffer (buffer viewer)))
-    (dotimes (y (q+:height buffer))
-      (dotimes (x (q+:width buffer))
-        (setf (q+:pixel buffer x y) (random-color generator))))))
+SIZE must be a positive integer designating the dimensions of the
+produced image.
 
-(define-widget main (QMainWindow)
-  ())
+COLOR must be either :GRAYSCALE or :TRUECOLOR to decide which type of
+color information to produce in the resulting image.
 
-(define-subwidget (main viewer) (make-instance 'viewer))
+OPEN must be one of:
 
-(define-subwidget (main regen) (q+:make-qpushbutton "Regenerate" main))
+  NIL    --- Just return the path
+  T      --- Open the file in the standard OS viewer
+  string --- Pass the path as an argument to the given program
 
-(define-subwidget (main chooser) (q+:make-qcombobox main)
-  (q+:add-items chooser (mapcar #'car *generators*)))
+Always returns the actual path the image was written to."
+  (let* ((generator (typecase generator
+                      ((eql T) random:*generator*)
+                      (random:generator generator)
+                      (random-state generator)
+                      (T (random:make-generator generator))))
+         (path (etypecase file
+                 (null (random-file generator))
+                 (string (pathname file))
+                 (pathname file)))
+         (data (make-array (* size size (ecase color (:grayscale 1) (:truecolor 3))) :element-type '(unsigned-byte 8)))
+         (png (make-instance 'zpng:png :width size :height size :color-type color :image-data data)))
+    (dotimes (i (length data))
+      (setf (aref data i) (round (* 255 (random:random-unit generator)))))
+    (zpng:write-png png path)
+    (etypecase open
+      (null)
+      ((eql T) (generic-open path))
+      (string (uiop:run-program (list open (uiop:native-namestring path)))))
+    file))
 
-(define-subwidget (main seed) (q+:make-qspinbox main)
-  (setf (q+:maximum seed) #xFFFFFFF)
-  (setf (q+:value seed) (mod (get-universal-time) #xFFFFFFF)))
+(defun generate-all (&key (directory (tempdir)) (size 512) (color :grayscale))
+  "Generates a PNG for all existing generators.
 
-(define-subwidget (main layout) (q+:make-qwidget main)
-  (let ((layout (q+:make-qvboxlayout layout)))
-    (q+:add-widget layout viewer)
-    (let ((inner (q+:make-qhboxlayout)))
-      (q+:add-widget inner chooser)
-      (q+:add-widget inner seed)
-      (q+:add-widget inner regen)
-      (q+:add-layout layout inner)))
-  (setf (q+:central-widget main) layout))
+The files are all named after the generator, and placed within
+DIRECTORY.
 
-(define-subwidget (main status) (q+:make-qlabel viewer)
-  (setf (q+:text status) "Ready.")
-  (q+:add-permanent-widget (q+:status-bar main) status))
+Returns the DIRECTORY.
 
-(define-slot (main regen) ()
-  (declare (connected regen (clicked)))
-  (let ((type (cdr (assoc (q+:current-text chooser) *generators* :test #'string-equal)))
-        (seed (value seed)))
-    (bt:make-thread
-     (lambda ()
-       (let ((start (get-internal-real-time)))
-         (setf (q+:text status) "Generating...")
-         (setf (q+:enabled regen) NIL)
-         (unwind-protect
-              (generate viewer (random-state::make-generator type seed))
-           (setf (q+:enabled regen) T)
-           (setf (q+:text status) (format NIL "Generation took ~fs." (/ (- (get-internal-real-time) start)
-                                                                        internal-time-units-per-second))))))
-     :initial-bindings `((*standard-output* . ,*standard-output*)))))
-
-(defun main ()
-  (with-main-window (w 'main :main-thread NIL)))
+See GENERATE"
+  (dolist (generator (random:list-generator-types) directory)
+    (with-simple-restart (contine "Ignore ~a" generator)
+      (generate generator :file (make-pathname :name (format NIL "~a" generator) :type "png" :defaults directory)
+                          :size size 
+                          :color color
+                          :open NIL))))
