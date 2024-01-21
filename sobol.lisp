@@ -741,7 +741,7 @@
 
 (macrolet ((m (j i)
              `(aref mdata (+ ,i (aref m ,j)))))
-  (define-generator sobol 32 (stateful-generator)
+  (define-generator sobol (make-list (sobol-dim generator) :initial-element 'single-float) (stateful-generator)
       ((dim 3 :type (unsigned-byte 16))
        (mdata (make-array 0 :element-type '(unsigned-byte 32)) :type (simple-array (unsigned-byte 32) (*)))
        (m (make-array 32 :element-type '(unsigned-byte 8)) :type (simple-array (unsigned-byte 8) (32)))
