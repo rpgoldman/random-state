@@ -275,6 +275,16 @@ See HISTOGRAM"))
 
 ;; * RNGs
 (docs:define-docs
+  (type adler32
+    "An RNG based on the Adler32 hash.
+
+See https://en.wikipedia.org/wiki/Adler-32")
+
+  (type cityhash-64
+    "An RNG based on the 64-bit CityHash.
+
+See https://github.com/google/cityhash")
+
   (type hammersley
     "The Hammersley quasi-random number sequence.
 
@@ -285,6 +295,11 @@ an integer greater or equal to 1, and can be used to advance the
 sequence more quickly for each dimension.
 
 See https://en.wikipedia.org/wiki/Low-discrepancy_sequence")
+
+  (type kiss11
+    "An implementation of the Kiss11 RNG.
+
+See https://eprint.iacr.org/2011/007.pdf")
   
   (type linear-congruence
     "A very simple random number generator based on linear congruence.
