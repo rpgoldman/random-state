@@ -138,6 +138,8 @@
                          (:hash
                           `(progn (defun ,hash (,index ,seed ,@(mapcar #'first bindings))
                                     (declare (type (unsigned-byte 64) ,index ,seed))
+                                    (declare ,@(loop for (slot _ . args) in slots
+                                                     collect `(type ,(getf args :type T) ,slot)))
                                     ,@body)
                                   (defmethod hash ((,generator ,name) ,index ,seed)
                                     (,hash ,index ,seed ,@(mapcar #'second bindings)))
@@ -145,8 +147,9 @@
                                     (let ((index (fit-bits 64 (1+ (,(intern* name 'index) ,generator))))
                                           (seed (,(intern* name '%seed) ,generator)))
                                       (setf (,(intern* name 'index) ,generator) index)
-                                      (locally
-                                          ,@body)))
+                                      (symbol-macrolet ,bindings
+                                        (locally
+                                            ,@body))))
                                   (defmethod next-byte ((,generator ,name))
                                     (,next ,generator))
                                   (defmethod next-byte-fun ((,generator ,name))
