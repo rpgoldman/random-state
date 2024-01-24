@@ -114,6 +114,32 @@
     (format stream "Cumulative deviation: ~6,3f%~%" total)
     histogram))
 
+(defun benchmark (rng &key (duration 10.0) (stream *standard-output*))
+  (let ((rng (ensure-generator rng))
+        (duration (float duration 0d0))
+        (units (ceiling (* INTERNAL-TIME-UNITS-PER-SECOND duration)))
+        (samples 0)
+        (start (get-internal-run-time)))
+    (declare (type fixnum samples))
+    (locally (declare (optimize speed (safety 0)))
+      (loop for current = (get-internal-run-time)
+            until (< units (- current start))
+            do (next-byte rng)
+               (incf samples)))
+    (format stream "Duration: ~12t~10,1f~%Samples: ~12t~10d~%Samples/s: ~12t~10,1f~%S/sample: ~12t~10,8f"
+            duration samples (/ samples duration) (/ duration samples))
+    samples))
+
+(defun benchmark-all (&key (duration 10.0) (stream *standard-output*))
+  (let* ((nullstream (make-broadcast-stream))
+         (stats (loop for rng in (list-generator-types)
+                      for result = (cons rng (handler-case (benchmark rng :duration duration :stream nullstream)
+                                               (error () -1)))
+                      when result collect result)))
+    (setf stats (sort stats #'> :key #'cdr))
+    (loop for (rng . samples) in stats
+          do (format stream "~&~a~20t~10d~%" rng samples))))
+
 (defun list-dim (list)
   (list* (length list)
          (when (listp (first list))
