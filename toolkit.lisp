@@ -117,8 +117,7 @@
 
 (defun benchmark (rng &key (samples 1000000) (stream *standard-output*))
   (let* ((rng (ensure-generator rng))
-         (next-fun (fdefinition (find-symbol (format NIL "~a-~a" (type-of rng) 'next)
-                                             (symbol-package (type-of rng)))))
+         (next-fun (next-byte-fun rng))
          (start (get-internal-run-time)))
     (declare (type (unsigned-byte 64) samples))
     (declare (type (function (generator) T) next-fun))

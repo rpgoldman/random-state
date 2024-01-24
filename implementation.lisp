@@ -26,6 +26,9 @@
 (defmethod next-byte ((generator random-state))
   (cl:random most-positive-fixnum generator))
 
+(defmethod next-byte-fun ((generator random-state))
+  (lambda (generator) (cl:random most-positive-fixnum generator)))
+
 (defmethod bits-per-byte ((generator random-state))
   (integer-length most-positive-fixnum))
 

@@ -132,7 +132,9 @@
                                     (symbol-macrolet ,bindings
                                       ,@body))
                                   (defmethod next-byte ((,generator ,name))
-                                    (,next ,generator))))
+                                    (,next ,generator))
+                                  (defmethod next-byte-fun ((,generator ,name))
+                                    #',next)))
                          (:hash
                           `(progn (defun ,hash (,index ,seed ,@(mapcar #'first bindings))
                                     (declare (type (unsigned-byte 64) ,index ,seed))
@@ -146,7 +148,9 @@
                                       (locally
                                           ,@body)))
                                   (defmethod next-byte ((,generator ,name))
-                                    (,next ,generator))))))
+                                    (,next ,generator))
+                                  (defmethod next-byte-fun ((,generator ,name))
+                                    #',next)))))
 
        ,@(unless (find :copy bodies :key #'car)
            `((defun ,copy (,generator)
