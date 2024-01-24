@@ -10,6 +10,7 @@
    (setf state (fit-bits 64 (+ state seed)))
    (pcg-next generator))
   (:next
+   (declare (optimize speed))
    (let ((oldstate state))
      (setf state (fit-bits 64 (+ (fit-bits 64 (* oldstate 6364136223846793005)) inc)))
      (let ((xord (fit-bits 32 (ash (logxor (ash oldstate -18) oldstate) -27)))
