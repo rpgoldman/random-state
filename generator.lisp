@@ -140,9 +140,11 @@
                                   (defmethod hash ((,generator ,name) ,index ,seed)
                                     (,hash ,index ,seed ,@(mapcar #'second bindings)))
                                   (defun ,next (,generator)
-                                    (let ((index (fit-bits 64 (1+ (index ,generator)))))
-                                      (setf (index ,generator) index)
-                                      (,hash index (%seed ,generator) ,@(mapcar #'second bindings))))
+                                    (let ((index (fit-bits 64 (1+ (,(intern* name 'index) ,generator))))
+                                          (seed (,(intern* name '%seed) ,generator)))
+                                      (setf (,(intern* name 'index) ,generator) index)
+                                      (locally
+                                          ,@body)))
                                   (defmethod next-byte ((,generator ,name))
                                     (,next ,generator))))))
 
