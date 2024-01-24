@@ -14,3 +14,25 @@ For both curiosity and convenience, this library offers multiple algorithms to g
 Several methods to compute random numbers in certain ranges are provided in advance: ``random-byte``, ``random-bytes``, ``random-sequence``, ``random-unit``, ``random-float``, and ``random-int``. Each of those can also be used with just the name of the generator you'd like to use as the first argument, in which case a global instance will be used.
 
 For generators that are hash-based, such as ``squirrel``, additional noise functions are provided: ``random-1d``, ``random-2d``, and ``random-3d``, and some functions to manipulate the stepping of the generator: ``index``, and ``rewind``.
+
+## Implementations
+The following algorithms are currently implemented:
+
+- Adler
+- Cityhash
+- Generic QRNG
+- Hammersley
+- KISS
+- Linear Congruence
+- Mersenne Twister
+- Middle Square
+- Murmurhash
+- PCG
+- RC4
+- Sobol
+- Squirrelhash
+- TT800
+- XKCD
+- Xorshift / Yorshift RNGs
+
+The protocol also implements a fallback to the implementation's own ``random-state``.
