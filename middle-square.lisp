@@ -2,8 +2,8 @@
 
 
 (define-generator middle-square (middle-square-bits generator) (stateful-generator)
-    ((bits 64)
-     (state 0))
+    ((bits 64 :type (unsigned-byte 8))
+     (state 0 :type unsigned-byte))
   (:reseed
    (setf state seed)
    (setf bits (integer-length seed)))
