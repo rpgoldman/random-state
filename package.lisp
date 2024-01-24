@@ -39,7 +39,9 @@
   (:export
    #:hopefully-sufficiently-random-seed
    #:histogram
-   #:print-histogram)
+   #:print-histogram
+   #:benchmark
+   #:benchmark-all)
   ;; * rngs
   (:export
    #:adler32

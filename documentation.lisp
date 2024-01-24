@@ -326,7 +326,24 @@ Prints a visual representation of the deviation of each bin from the
 ideal uniform distribution as well as the cumulative deviation of all
 bins.
 
-See HISTOGRAM"))
+See HISTOGRAM")
+
+  (function benchmark
+    "Draw a number of samples from an NRG and determine how quickly it operates.
+
+Prints the duration, # samples, samples/s, and s/sample to STREAM.
+Returns samples/s.
+
+See BENCHMARK-ALL")
+
+  (function benchmark-all
+    "Run a benchmark for all known generator types.
+
+When completed, orders the the results from fastest to slowest and
+prints them to STREAM. If a generator fails to be benchmarked, its
+result is shown as -1.
+
+See BENCHMARK"))
 
 ;; * RNGs
 (docs:define-docs
