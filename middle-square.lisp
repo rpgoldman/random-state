@@ -1,7 +1,7 @@
 (in-package #:org.shirakumo.random-state)
 
 
-(define-generator middle-square 64 (stateful-generator)
+(define-generator middle-square (middle-square-bits generator) (stateful-generator)
     ((bits 64)
      (state 0))
   (:reseed
