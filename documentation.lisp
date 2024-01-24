@@ -421,6 +421,11 @@ See https://www.youtube.com/watch?v=LWFzPP8ZbdU")
 
 See http://random.mat.sbg.ac.at/publics/ftp/pub/data/tt800.c")
 
+  (type xkcd
+    "XKCD-221 random number generator
+
+See https://xkcd.com/221/")
+
   (type xorshift-32
     "Linear 32-bit word state shift-register generator.
 

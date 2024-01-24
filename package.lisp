@@ -57,6 +57,7 @@
    #:sobol
    #:squirrel
    #:tt800
+   #:xkcd
    #:xorshift-1024*
    #:xorshift-128
    #:xorshift-128+
