@@ -131,8 +131,6 @@
   (let* ((generator (ensure-generator generator))
          (range (- to from))
          (bits (integer-length range)))
-    (declare (type (unsigned-byte 64) range)
-             (type (unsigned-byte 8) bits))
     (+ from
        ;; CANDIDATE is in the range [0, 2^BITS). Trying to map
        ;; this to our target range will introduce bias -- for example,
