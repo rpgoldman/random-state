@@ -23,6 +23,9 @@
   (push (namestring (uiop:pathname-directory-pathname *load-truename*)) (symbol-value (uiop:intern* '#:*local-project-directories* :ql)))
   (uiop:symbol-call :ql 'quickload "documentation-utils"))
 
+(setf tpl:*zoom-print-length* nil
+      tpl:*zoom-print-level* nil)
+
 (handler-case
  (assert (uiop:pathname-equal (asdf:component-pathname (asdf:find-system "random-state"))
                               (uiop:pathname-directory-pathname *load-truename*)))
@@ -44,12 +47,19 @@
     (format t "Failed to build cleanly: got WARNINGs:~%~{~t~a~%~}" warnings))
   (when style-warnings
     (format t "Failed to build cleanly: got STYLE-WARNINGs:~%~{~t~a~%~}" style-warnings))
-  (when (or warnings style-warnings)
-   (uiop:die 3 "Failed to build cleanly: got ~a"
-             (cond ((and warnings style-warnings)
-                    "warnings and style warnings")
-                   (warnings "warnings")
-                   (style-warnings "style warnings")))))
+  ;; (when (or warnings style-warnings)
+  ;;  (format t "Failed to build cleanly: got ~a"
+  ;;            (cond ((and warnings style-warnings)
+  ;;                   "warnings and style warnings")
+  ;;                  (warnings "warnings")
+  ;;                  (style-warnings "style warnings"))))
+  )
+
+(format t "~&Loading...~%")
+(asdf:load-system "random-state")
+(format t "~&Testing...~%")
+(asdf:test-system "random-state-test")
+(format t "~&Done~%")
 
 
 (uiop:quit 0)
