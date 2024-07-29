@@ -116,6 +116,10 @@
     histogram))
 
 (defun benchmark (rng &key (samples 1000000) (stream *standard-output*))
+  ;; this declaration is necessary because ENSURE-GENERATOR is a
+  ;; forward-reference and SBCL does not like it that it misses the
+  ;; chance to apply the compiler macro here. [2024/07/29:rpg]
+  (declare (notinline ensure-generator))
   (let* ((rng (ensure-generator rng))
          (next-fun (next-byte-fun rng))
          (start (get-internal-run-time)))
