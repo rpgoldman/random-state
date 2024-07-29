@@ -46,7 +46,7 @@
   (if *print-readably*
       (call-next-method)
       (print-unreadable-object (generator stream :type T)
-	(format stream "~s" (seed generator))))
+        (format stream "~s" (seed generator))))
   ;; P-U-O does not return the object, which PRINT-OBJECT is supposed to do.
   generator)
 
