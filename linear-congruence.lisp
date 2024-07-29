@@ -7,4 +7,6 @@
   (:reseed
    (setf state (mod seed (1- (ash 1 64)))))
   (:next
-   (setf state (mod (+ increment (* state multiplier)) (1- (ash 1 64))))))
+   (declare (optimize speed))
+   (update 64 state * multiplier)
+   (update 64 state + increment)))

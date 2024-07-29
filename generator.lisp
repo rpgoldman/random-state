@@ -32,7 +32,7 @@
               (,name (global-generator ,gen) ,@argsyms)))))
 
 (defun list-generator-types ()
-  *generator-types*)
+  (setf *generator-types* (sort *generator-types* #'string<)))
 
 (defstruct (generator
             (:constructor NIL)
@@ -77,17 +77,8 @@
 (define-generator-fun bits-per-byte (generator))
 (define-generator-fun copy (generator))
 
-;;; supporting methods for COPY
-(defmethod copy ((thing number))
-  thing)
-
-(defmethod copy ((thing array))
-  (make-array (array-dimensions thing)
-              :element-type (array-element-type thing)
-              :fill-pointer (array-has-fill-pointer-p thing)
-              :adjustable (adjustable-array-p thing)
-              :initial-contents thing))
-
+(defun multivariate-p (generator)
+  (listp (bits-per-byte generator)))
 
 (defun make-generator (type &optional (seed T) &rest initargs)
   (let ((generator (apply #'%make-generator type initargs)))
@@ -102,18 +93,18 @@
   (%seed generator))
 
 (defmacro define-generator (name bits-per-byte super slots &body bodies)
-  (let ((constructor (intern* 'make name))
-        (copy (intern* 'copy name))
-        (reseed (intern* name 'reseed))
-        (next (intern* name 'next))
-        (hash (intern* name 'hash))
-        (bindings (append (loop for (slot) in slots collect
-                                `(,slot (,(intern* name slot) generator)))
-                          (loop for (slot) in (rest super) collect
-                                `(,slot (,(intern* (first super) slot) generator)))))
-        (generator (intern* 'generator))
-        (seed (intern* 'seed))
-        (index (intern* 'index)))
+  (let* ((constructor (intern* 'make name))
+         (copy (intern* 'copy name))
+         (reseed (intern* name 'reseed))
+         (next (intern* name 'next))
+         (hash (intern* name 'hash))
+         (generator (intern* 'generator))
+         (bindings (append (loop for (slot) in slots collect
+                                 `(,slot (,(intern* name slot) ,generator)))
+                           (loop for (slot) in (rest super) collect
+                                 `(,slot (,(intern* (first super) slot) ,generator)))))
+         (seed (intern* 'seed))
+         (index (intern* 'index)))
     `(progn
        (pushnew ',name *generator-types*)
        
@@ -141,19 +132,28 @@
                                     (symbol-macrolet ,bindings
                                       ,@body))
                                   (defmethod next-byte ((,generator ,name))
-                                    (,next ,generator))))
+                                    (,next ,generator))
+                                  (defmethod next-byte-fun ((,generator ,name))
+                                    #',next)))
                          (:hash
-                          `(progn (defun ,hash (,index ,seed)
+                          `(progn (defun ,hash (,index ,seed ,@(mapcar #'first bindings))
                                     (declare (type (unsigned-byte 64) ,index ,seed))
+                                    (declare ,@(loop for (slot _ . args) in slots
+                                                     collect `(type ,(getf args :type T) ,slot)))
                                     ,@body)
                                   (defmethod hash ((,generator ,name) ,index ,seed)
-                                    (,hash ,index ,seed))
+                                    (,hash ,index ,seed ,@(mapcar #'second bindings)))
                                   (defun ,next (,generator)
-                                    (let ((index (fit-bits 64 (1+ (index ,generator)))))
-                                      (setf (index ,generator) index)
-                                      (,hash index (%seed ,generator))))
+                                    (let ((index (fit-bits 64 (1+ (,(intern* name 'index) ,generator))))
+                                          (seed (,(intern* name '%seed) ,generator)))
+                                      (setf (,(intern* name 'index) ,generator) index)
+                                      (symbol-macrolet ,bindings
+                                        (locally
+                                            ,@body))))
                                   (defmethod next-byte ((,generator ,name))
-                                    (,next ,generator))))))
+                                    (,next ,generator))
+                                  (defmethod next-byte-fun ((,generator ,name))
+                                    #',next)))))
 
        ,@(unless (find :copy bodies :key #'car)
            `((defun ,copy (,generator)
@@ -180,9 +180,9 @@
 
 (defmethod %make-generator ((type symbol) &rest args)
   (let ((name (find-symbol (string type) #.*package*)))
-    (if name
+    (if (and name (member name *generator-types*))
         (apply #'%make-generator name args)
-        (call-next-method))))
+        (error "No generator with name ~s known." type))))
 
 (defstruct (hash-generator
             (:include generator)

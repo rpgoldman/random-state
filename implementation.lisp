@@ -18,13 +18,15 @@
              (sb-kernel::random-state-state seeded)))
   #+allegro
   (setf (excl::random-state-seed generator) seed)
-  #-(or allegro sbcl)   #-(or allegro sbcl)
-  (declare (ignorable seed))
-  (warn "Can't reseed RANDOM-STATE objects on ~a" (lisp-implementation-type))
+  #-(or allegro sbcl) (declare (ignorable seed))
+  #-(or allegro sbcl) (warn "Can't reseed RANDOM-STATE objects on ~a" (lisp-implementation-type))
   generator)
 
 (defmethod next-byte ((generator random-state))
   (cl:random most-positive-fixnum generator))
+
+(defmethod next-byte-fun ((generator random-state))
+  (lambda (generator) (cl:random most-positive-fixnum generator)))
 
 (defmethod bits-per-byte ((generator random-state))
   (integer-length most-positive-fixnum))

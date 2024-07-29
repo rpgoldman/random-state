@@ -9,6 +9,6 @@
   :serial T
   :components ((:file "viewer"))
   :depends-on (:random-state
-               :qtools
-               :qtcore
-               :qtgui))
+               :zpng
+               :trivial-features
+               :uiop))
