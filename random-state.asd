@@ -6,6 +6,7 @@
   :homepage "https://Shinmera.github.io/random-state/"
   :bug-tracker "https://github.com/Shinmera/random-state/issues"
   :source-control (:git "https://github.com/Shinmera/random-state.git")
+  :in-order-to ((test-op (test-op "random-state-test")))
   :serial T
   :components ((:file "package")
                (:file "toolkit")
