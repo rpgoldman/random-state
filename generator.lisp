@@ -107,7 +107,7 @@
          (index (intern* 'index)))
     `(progn
        (pushnew ',name *generator-types*)
-       
+
        (defstruct (,name
                    (:include ,@super)
                    (:constructor ,constructor)
@@ -129,6 +129,8 @@
                                     (,reseed ,generator new-seed))))
                          (:next
                           `(progn (defun ,next (,generator)
+                                    ;; sometimes argument is not used.
+                                    (declare (ignorable ,generator))
                                     (symbol-macrolet ,bindings
                                       ,@body))
                                   (defmethod next-byte ((,generator ,name))
@@ -157,6 +159,8 @@
 
        ,@(unless (find :copy bodies :key #'car)
            `((defun ,copy (,generator)
+               ;; sometimes the argument is not used.
+               (declare (ignorable ,generator))
                (,constructor ,@(loop for binding in bindings
                                      collect (intern (string (first binding)) "KEYWORD")
                                      collect `(copy ,(second binding)))))))
