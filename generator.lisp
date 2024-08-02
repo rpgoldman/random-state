@@ -140,7 +140,7 @@
                          (:hash
                           `(progn (defun ,hash (,index ,seed ,@(mapcar #'first bindings))
                                     (declare (type (unsigned-byte 64) ,index ,seed))
-                                    (declare ,@(loop for (slot _ . args) in slots
+                                    (declare ,@(loop for (slot nil . args) in slots
                                                      collect `(type ,(getf args :type T) ,slot)))
                                     ,@body)
                                   (defmethod hash ((,generator ,name) ,index ,seed)

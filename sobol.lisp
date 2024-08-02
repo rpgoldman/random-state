@@ -759,7 +759,6 @@
      (loop for i from 1 below dim
            for a = (aref sobol-a (1- i))
            for d = 0
-           for k = 0
            do (loop while (< 0 a)
                     do (incf d)
                        (setf a (ash a -1)))
