@@ -80,6 +80,18 @@
 (defun multivariate-p (generator)
   (listp (bits-per-byte generator)))
 
+;;; supporting methods for COPY
+(defmethod copy ((thing number))
+  thing)
+
+(defmethod copy ((thing array))
+  (make-array (array-dimensions thing)
+              :element-type (array-element-type thing)
+              :fill-pointer (array-has-fill-pointer-p thing)
+              :adjustable (adjustable-array-p thing)
+              :initial-contents thing))
+
+
 (defun make-generator (type &optional (seed T) &rest initargs)
   (let ((generator (apply #'%make-generator type initargs)))
     (when seed (reseed generator seed))
