@@ -55,16 +55,18 @@
 
 (defun ensure-generator (generator-ish)
   (etypecase generator-ish
+    ((eql T) *generator*)
     (symbol (global-generator generator-ish))
     (random-state generator-ish)
     (generator generator-ish)))
 
 (define-compiler-macro ensure-generator (&whole whole generator-ish &environment env)
   (if (constantp generator-ish env)
-      `(load-time-value (etypecase ,generator-ish
-                          (symbol (global-generator ,generator-ish))
-                          (random-state ,generator-ish)
-                          (generator ,generator-ish)))
+      `(etypecase ,generator-ish
+         ((eql T) *generator*)
+         (symbol (load-time-value (global-generator ,generator-ish)))
+         (random-state ,generator-ish)
+         (generator ,generator-ish))
       whole))
 
 (defgeneric %make-generator (type &key))
