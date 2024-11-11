@@ -38,22 +38,21 @@
 (declaim (inline random))
 
 (defun random (max &optional (generator *generator*))
-  (etypecase max
-    ((integer 0)
-     (random-int generator 0 (1- max)))
-    ((short-float 0s0)
-     (random-float generator 0s0 (- max short-float-epsilon)))
-    ;; apparently ccl's SHORT-FLOAT and SINGLE-FLOAT are the same
-    ;; and also on SBCL, at least on new Mac chips.
-    #-(or ccl (and sbcl darwin arm64))
-    ((single-float 0f0)
-     (random-float generator 0f0 (- max single-float-epsilon)))
-    ((double-float 0d0)
-     (random-float generator 0d0 (- max double-float-epsilon)))
-    ;; see SINGLE-FLOAT comment
-    #-(or ccl (and sbcl darwin arm64))
-    ((long-float 0l0)
-     (random-float generator 0l0 (- max long-float-epsilon)))))
+  (if (= 0 max)
+      max
+      (macrolet ((gen (&rest types)
+                   `(etypecase max
+                      ((integer 0)
+                       (random-int generator 0 (1- max)))
+                      ,@(loop for (type eps alias) in types
+                              for zero = (coerce 0 type)
+                              unless (and alias (subtypep type alias))
+                              collect `((,type ,zero)
+                                        (random-float generator ,zero (- max ,eps)))))))
+        (gen (short-float short-float-epsilon single-float)
+             (single-float single-float-epsilon)
+             (double-float double-float-epsilon)
+             (long-float long-float-epsilon double-float)))))
 
 (defun draw (n &optional (generator *generator*))
   (let ((samples (make-array n :element-type 'single-float))
