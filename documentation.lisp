@@ -279,7 +279,7 @@ See GENERATOR
 See NEXT-BYTE")
 
   (function random-unit
-    "Returns a random float in [0, 1].
+    "Returns a random float in [0, 1[.
 
 The returned float is of the type specified in TYPE.
 
@@ -287,7 +287,7 @@ see GENERATOR
 See RANDOM-BYTES")
 
   (function random-float
-    "Returns a random float in [FROM, TO].
+    "Returns a random float in [FROM, TO[.
 
 The returned float is of the same type as whatever type is larger
 between FROM and TO.

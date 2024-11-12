@@ -38,21 +38,19 @@
 (declaim (inline random))
 
 (defun random (max &optional (generator *generator*))
-  (if (= 0 max)
-      max
-      (macrolet ((gen (&rest types)
-                   `(etypecase max
-                      ((integer 0)
-                       (random-int generator 0 (1- max)))
-                      ,@(loop for (type eps alias) in types
-                              for zero = (coerce 0 type)
-                              unless (and alias (subtypep type alias))
-                              collect `((,type ,zero)
-                                        (random-float generator ,zero (- max ,eps)))))))
-        (gen (short-float short-float-epsilon single-float)
-             (single-float single-float-epsilon)
-             (double-float double-float-epsilon)
-             (long-float long-float-epsilon double-float)))))
+  (macrolet ((gen (&rest types)
+               `(etypecase max
+                  ((integer 0)
+                   (random-int generator 0 (1- max)))
+                  ,@(loop for (type alias) in types
+                          for zero = (coerce 0 type)
+                          unless (and alias (subtypep type alias))
+                          collect `((,type ,zero)
+                                    (random-float generator ,zero max))))))
+    (gen (short-float single-float)
+         (single-float)
+         (double-float)
+         (long-float double-float))))
 
 (defun draw (n &optional (generator *generator*))
   (let ((samples (make-array n :element-type 'single-float))
