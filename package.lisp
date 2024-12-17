@@ -40,6 +40,7 @@
    #:hopefully-sufficiently-random-seed
    #:histogram
    #:print-histogram
+   #:histogram-all
    #:benchmark
    #:benchmark-all)
   ;; * rngs

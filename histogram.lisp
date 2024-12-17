@@ -1,6 +1,6 @@
 (in-package #:org.shirakumo.random-state)
 
-(defun histogram (rng bins &key (samples (floor 1e8)) (width 80) (stream *standard-output*))
+(defun histogram (rng bins &key (samples (floor 1e8)) (width 80) (stream *standard-output*) (print-summary T))
   (check-type samples (unsigned-byte 64))
   (let ((histogram (make-array bins))
         (sample-contribution (/ samples))
@@ -15,11 +15,17 @@
           (incf (aref histogram (floor (* (random 1.0 rng) bins)))
                 sample-contribution))))
     (format stream " 100%~%")
-    (let ((duration (/ (- (get-internal-real-time) start)
-                       INTERNAL-TIME-UNITS-PER-SECOND)))
-      (format stream "Generation took: ~6,3fs, ~fμs/sample~%"
-              duration (* 1000000 (/ duration samples))))
+    (when print-summary
+      (let ((duration (/ (- (get-internal-real-time) start)
+                         INTERNAL-TIME-UNITS-PER-SECOND)))
+        (format stream "Generation took: ~6,3fs, ~fμs/sample~%"
+                duration (* 1000000 (/ duration samples)))))
     histogram))
+
+(defun histogram-deviation (histogram)
+  (loop for bin across histogram
+        for deviation = (* 100 (- bin (/ (length histogram))))
+        sum (abs deviation)))
 
 (defun print-histogram (histogram &key (stream *standard-output*) (width 80))
   (assert (< 7 width))
@@ -37,8 +43,19 @@
     (format stream "Cumulative deviation: ~6,3f%~%" total)
     histogram))
 
+(defun histogram-all (&key (bins 5) (samples (floor 1e6)) (width 80) (stream *standard-output*))
+  (format stream "Generating samples...~%")
+  (let* ((stats (loop for rng in (list-generator-types)
+                      for result = (ignore-errors
+                                    (format stream "~&~19a " rng)
+                                    (cons rng (histogram rng bins :samples samples :width (- width 20) :print-summary NIL)))
+                      when result collect result)))
+    (setf stats (sort stats #'< :key (lambda (x) (histogram-deviation (cdr x)))))
+    (loop for (rng . histogram) in stats
+          do (format stream "~&~%~a~%" rng)
+             (print-histogram histogram :stream stream :width width))))
 
-(defun benchmark (rng &key (samples 1000000) (stream *standard-output*))
+(defun benchmark (rng &key (samples 1e6) (stream *standard-output*))
   ;; this declaration is necessary because ENSURE-GENERATOR is a
   ;; forward-reference and SBCL does not like it that it misses the
   ;; chance to apply the compiler macro here. [2024/07/29:rpg]
@@ -56,7 +73,7 @@
               duration samples (/ samples duration) (/ duration samples))
       (/ samples duration))))
 
-(defun benchmark-all (&key (samples 1000000) (stream *standard-output*))
+(defun benchmark-all (&key (samples 1e6) (stream *standard-output*))
   (let* ((nullstream (make-broadcast-stream))
          (stats (loop for rng in (list-generator-types)
                       for result = (cons rng (handler-case (benchmark rng :samples samples :stream nullstream)
