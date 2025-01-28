@@ -1,5 +1,7 @@
 (in-package #:org.shirakumo.random-state)
 
+(declaim (special *generator*))
+
 (declaim (inline fit-bits))
 (declaim (ftype (function ((unsigned-byte 8) (integer 0)) (integer 0)) fit-bits))
 (defun fit-bits (bits x)
