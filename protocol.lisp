@@ -47,13 +47,13 @@
      (random-float generator 0s0 (- max short-float-epsilon)))
     ;; apparently ccl's SHORT-FLOAT and SINGLE-FLOAT are the same
     ;; and also on SBCL, at least on new Mac chips.
-    #-(or ccl (and sbcl darwin arm64))
+    #-(or ccl sbcl)
     ((single-float 0f0)
      (random-float generator 0f0 (- max single-float-epsilon)))
     ((double-float 0d0)
      (random-float generator 0d0 (- max double-float-epsilon)))
     ;; see SINGLE-FLOAT comment
-    #-(or ccl (and sbcl darwin arm64))
+    #-(or ccl sbcl)
     ((long-float 0l0)
      (random-float generator 0l0 (- max long-float-epsilon)))))
 
