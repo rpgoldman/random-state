@@ -2,6 +2,8 @@
 
 (defvar *generator* *random-state*)
 
+;; FIXME: these do not work correctly if RANDOM-BYTES fails because RANDOM-BYTE returns
+;;        a non-integer, as it may do for pseudo generators.
 (define-compiler-macro random-float (&whole whole generator from to &environment env)
   (cond ((and (constantp from env) (constantp to env))
          `(+ (load-time-value (min ,to ,from))
